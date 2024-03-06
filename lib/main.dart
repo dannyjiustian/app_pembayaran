@@ -41,20 +41,21 @@ class OnBoardingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: GoogleFonts.poppinsTextTheme(
-          Theme.of(context).textTheme,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: GoogleFonts.poppinsTextTheme(
+            Theme.of(context).textTheme,
+          ),
         ),
-      ),
-      home: OnBoarding == 0
-          ? OnBoardingPage(
-              valueHome: OnHomeScreen,
-            )
-          : OnHomeScreen == 0
-              ? LoginScreen()
-              : HomeScreen(),
-    );
+        home: HomeScreen()
+        // home: OnBoarding == 0
+        //     ? OnBoardingPage(
+        //         valueHome: OnHomeScreen,
+        //       )
+        //     : OnHomeScreen == 0
+        //         ? LoginScreen()
+        //         : HomeScreen(),
+        );
   }
 }
