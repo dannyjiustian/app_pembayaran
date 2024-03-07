@@ -14,22 +14,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -62,8 +46,175 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top;
 
-    final List<String> entries = <String>['A', 'B', 'C'];
-    final List<int> colorCodes = <int>[600, 500, 100];
+    List _widgetOptions = [
+      SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            Container(
+              height: bodyHeight * 0.13,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: AssetImage("assets/img/logo.png"),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Hi, Budi 👋",
+                            style: GoogleFonts.poppins(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            "Selamat datang kembali!",
+                            style: GoogleFonts.poppins(
+                                fontSize: 14, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              height: 230,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Swiper(
+                  itemBuilder: (BuildContext context, int index) {
+                    return CardRFIDVirtual(mediaQueryWidth: mediaQueryWidth);
+                  },
+                  itemCount: 3,
+                  itemWidth: mediaQueryWidth - 40,
+                  itemHeight: 180,
+                  layout: SwiperLayout.STACK,
+                  scrollDirection: Axis.vertical,
+                  axisDirection: AxisDirection.down,
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 2.5),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: mediaQueryWidth / 2 - 30,
+                      child: ButtonWidget(
+                          buttonText: "Top Up",
+                          colorSetBody: Colors.blue.shade100,
+                          colorSetText: Colors.black,
+                          functionTap: () => {}),
+                    ),
+                    SizedBox(
+                      width: mediaQueryWidth / 2 - 30,
+                      child: ButtonWidget(
+                          buttonText: "Daftar Kartu",
+                          colorSetBody: Colors.blue.shade100,
+                          colorSetText: Colors.black,
+                          functionTap: () => {}),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              height: 130,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
+                child: Swiper(
+                  itemBuilder: (BuildContext context, int index) {
+                    return CardBanner();
+                  },
+                  itemCount: 3,
+                  viewportFraction: 0.9,
+                  scale: 0.98,
+                  autoplay: true,
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                child: Text(
+                  "Transaksi Terakhir",
+                  style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black),
+                ),
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 5,
+                    itemBuilder: (context, index) =>
+                        CardListTranasction(mediaQueryWidth: mediaQueryWidth),
+                    separatorBuilder: (context, index) => const SizedBox(
+                          height: 10,
+                        ))),
+          ],
+        ),
+      ),
+      DefaultTabController(
+        initialIndex: 0,
+        length: 2,
+        child: Scaffold(
+          appBar: TabBar(
+              labelColor: Colors.blue.shade500,
+              unselectedLabelColor: Colors.grey.shade500,
+              tabs: [
+                Tab(
+                    child: Text(
+                  'Selesai',
+                  style: GoogleFonts.poppins(
+                      fontSize: 14, fontWeight: FontWeight.w600),
+                )),
+                Tab(
+                    child: Text('On Proses',
+                        style: GoogleFonts.poppins(
+                            fontSize: 14, fontWeight: FontWeight.w600))),
+              ]),
+          body: TabBarView(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: ListView.separated(
+                    itemCount: 50,
+                    itemBuilder: (context, index) =>
+                        CardListTranasction(mediaQueryWidth: mediaQueryWidth),
+                    separatorBuilder: (context, index) => const SizedBox(
+                          height: 10,
+                        )),
+              ),
+              Center(
+                child: Text("It's rainy here"),
+              ),
+            ],
+          ),
+        ),
+      ),
+      Text(
+        'Index 2: School',
+      ),
+    ];
+
     return MaterialApp(
       title: "Home",
       theme: ThemeData(
@@ -73,148 +224,24 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       home: Scaffold(
         appBar: appBar,
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            children: [
-              Container(
-                height: bodyHeight * 0.13,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: AssetImage("assets/img/logo.png"),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Hi, Budi 👋",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 18, fontWeight: FontWeight.w600),
-                            ),
-                            Text(
-                              "Selamat datang kembali!",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                height: 230,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  child: Swiper(
-                    itemBuilder: (BuildContext context, int index) {
-                      return CardRFIDVirtual(mediaQueryWidth: mediaQueryWidth);
-                    },
-                    itemCount: 3,
-                    itemWidth: mediaQueryWidth - 40,
-                    itemHeight: 180,
-                    layout: SwiperLayout.STACK,
-                    scrollDirection: Axis.vertical,
-                    axisDirection: AxisDirection.down,
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 2.5),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: mediaQueryWidth / 2 - 30,
-                        child: ButtonWidget(
-                            buttonText: "Top Up",
-                            colorSetBody: Colors.blue.shade100,
-                            colorSetText: Colors.black,
-                            functionTap: () => {}),
-                      ),
-                      SizedBox(
-                        width: mediaQueryWidth / 2 - 30,
-                        child: ButtonWidget(
-                            buttonText: "Daftar Kartu",
-                            colorSetBody: Colors.blue.shade100,
-                            colorSetText: Colors.black,
-                            functionTap: () => {}),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                height: 130,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
-                  child: Swiper(
-                    itemBuilder: (BuildContext context, int index) {
-                      return CardBanner();
-                    },
-                    itemCount: 3,
-                    viewportFraction: 0.9,
-                    scale: 0.98,
-                    autoplay: true,
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                  child: Text(
-                    "Transaksi Terakhir",
-                    style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                ),
-              ),
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                  child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: 5,
-                      itemBuilder: (context, index) =>
-                          CardListTranasction(mediaQueryWidth: mediaQueryWidth),
-                      separatorBuilder: (context, index) => SizedBox(
-                            height: 10,
-                          ))),
-            ],
-          ),
-        ),
+        body: _widgetOptions.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Iconsax.home_2),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.business),
-              label: 'Business',
+              icon: Icon(Iconsax.receipt_1),
+              label: 'History',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: 'School',
+              icon: Icon(Iconsax.profile_circle),
+              label: 'Profile',
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: Colors.blue.shade500,
           onTap: _onItemTapped,
         ),
       ),
