@@ -185,17 +185,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                child: Column(
-                  children: [
-                    CardListTranasction(mediaQueryWidth: mediaQueryWidth),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CardListTranasction(mediaQueryWidth: mediaQueryWidth),
-                  ],
-                ),
-              ),
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: 5,
+                      itemBuilder: (context, index) =>
+                          CardListTranasction(mediaQueryWidth: mediaQueryWidth),
+                      separatorBuilder: (context, index) => SizedBox(
+                            height: 10,
+                          ))),
             ],
           ),
         ),
