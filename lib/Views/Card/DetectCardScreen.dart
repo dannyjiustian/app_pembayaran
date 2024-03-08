@@ -1,10 +1,11 @@
-import 'package:app_pembayaran/Views/Card/FormTopUpScreen.dart';
+import 'package:app_pembayaran/Views/TopUp/FormTopUpScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../DaftarKartu/DaftarKartuScreen.dart';
 import '../Widget/IconAppbarCostuimeWidget.dart';
 
 class DetectCardScreen extends StatefulWidget {
@@ -72,29 +73,41 @@ class _DetectCardScreenState extends State<DetectCardScreen> {
                 ],
               ),
               Expanded(
-                  child: InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => FormTopUpScreen()));
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      "assets/img/contactless.svg",
-                      width: 200,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/img/contactless.svg",
+                    width: 200,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => FormTopUpScreen()));
+                    },
+                    child: Text(
                       "Tempelkan kartu Kamu ke area NFC Ponsel",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                           fontSize: 18, fontWeight: FontWeight.w600),
                     ),
-                  ],
-                ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => DaftarKartuScreen()));
+                    },
+                    child: Text(
+                      "Tempelkan kartu Kamu ke area NFC Ponsel",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                          fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
               ))
             ]),
           ),
