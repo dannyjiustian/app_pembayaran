@@ -1,3 +1,4 @@
+import 'package:app_pembayaran/Views/Card/FormTopUpScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -71,23 +72,29 @@ class _DetectCardScreenState extends State<DetectCardScreen> {
                 ],
               ),
               Expanded(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    "assets/img/contactless.svg",
-                    width: 200,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    "Tempelkan kartu Kamu ke area NFC Ponsel",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                        fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                ],
+                  child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => FormTopUpScreen()));
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      "assets/img/contactless.svg",
+                      width: 200,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      "Tempelkan kartu Kamu ke area NFC Ponsel",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                          fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
               ))
             ]),
           ),
