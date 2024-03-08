@@ -1,3 +1,4 @@
+import 'package:app_pembayaran/Views/DetailTransaksi/DetailTransaksiScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -12,7 +13,10 @@ class CardListTranasctionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => DetailTransaksiScreen()));
+      },
       child: Container(
         width: mediaQueryWidth,
         margin: const EdgeInsets.symmetric(horizontal: 2.5),
