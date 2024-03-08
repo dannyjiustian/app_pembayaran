@@ -1,4 +1,4 @@
-import 'package:app_pembayaran/Views/Card/SuccessTopUpScreen.dart';
+import 'package:app_pembayaran/Views/Card/SuccessScreen.dart';
 import 'package:app_pembayaran/Views/Widget/CardRFIDVirtualWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -112,7 +112,7 @@ class _FormTopUpScreenState extends State<FormTopUpScreen> {
                         functionTap: () async {
                           FocusScope.of(context).unfocus();
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => SuccessTopUpScreen()));
+                              builder: (context) => SuccessScreen()));
                         },
                       ),
                     ],
