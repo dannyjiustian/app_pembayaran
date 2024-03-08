@@ -1,10 +1,13 @@
 import 'package:app_pembayaran/Views/Card/DetectCardScreen.dart';
 import 'package:app_pembayaran/Views/Widget/ButtonWidget.dart';
+import 'package:app_pembayaran/Views/Widget/CardRFIDVirtualWidget.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+
+import '../../Widget/CardBannerWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -103,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                       child: Swiper(
                         itemBuilder: (BuildContext context, int index) {
-                          return CardRFIDVirtual(
+                          return CardRFIDVirtualWidget(
                               mediaQueryWidth: mediaQueryWidth);
                         },
                         itemCount: 3,
@@ -153,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
                       child: Swiper(
                         itemBuilder: (BuildContext context, int index) {
-                          return const CardBanner();
+                          return const CardBannerWidget();
                         },
                         itemCount: 3,
                         viewportFraction: 0.9,
@@ -398,107 +401,6 @@ class CardListTranasction extends StatelessWidget {
                 )
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CardBanner extends StatelessWidget {
-  const CardBanner({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2.5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
-        color: Colors.blue.shade100,
-        image: const DecorationImage(
-          image: NetworkImage(
-              "https://images.tokopedia.net/img/cache/1208/NsjrJu/2024/3/5/71ceb9ec-a589-4faa-b0b4-769956548964.jpg"),
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-}
-
-class CardRFIDVirtual extends StatelessWidget {
-  const CardRFIDVirtual({
-    super.key,
-    required this.mediaQueryWidth,
-  });
-
-  final double mediaQueryWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2.5),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.grey.shade300),
-          color: Colors.blue.shade100),
-      width: mediaQueryWidth,
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Kartu Pembayaran",
-              style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Transform.rotate(
-                  angle: 90 * (3.14 / 180),
-                  child: const Icon(
-                    Iconsax.wifi,
-                    size: 25,
-                  ),
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Sisa Saldo",
-                        style: GoogleFonts.poppins(
-                            fontSize: 10, color: Colors.black),
-                      ),
-                      Text(
-                        "Rp. 10.000",
-                        style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black),
-                      ),
-                    ]),
-                Text(
-                  "0xC660DC42xxxxxx",
-                  style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                ),
-              ],
-            )
           ],
         ),
       ),
