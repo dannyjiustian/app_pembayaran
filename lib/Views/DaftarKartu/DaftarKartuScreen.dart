@@ -42,7 +42,7 @@ class _DaftarKartuScreenState extends State<DaftarKartuScreen> {
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top;
     return MaterialApp(
-      title: "Form TopUp",
+      title: "Daftar Kartu",
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(
           Theme.of(context).textTheme,

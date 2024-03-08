@@ -35,7 +35,7 @@ class SuccessScreen extends StatelessWidget {
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top;
     return MaterialApp(
-      title: "Forgot",
+      title: "Success Screen",
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(
           Theme.of(context).textTheme,

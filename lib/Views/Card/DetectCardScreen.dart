@@ -41,7 +41,7 @@ class _DetectCardScreenState extends State<DetectCardScreen> {
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top;
     return MaterialApp(
-        title: "Top Up",
+        title: "Deteksi Kartu",
         theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(
             Theme.of(context).textTheme,
