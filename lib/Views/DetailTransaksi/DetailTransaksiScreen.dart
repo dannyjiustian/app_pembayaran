@@ -113,9 +113,21 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                 Text("ID Transaksi",
                     style: GoogleFonts.poppins(
                         fontSize: 14, fontWeight: FontWeight.w600)),
-                Text("1234asd-asdas",
-                    style: GoogleFonts.poppins(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
+                Expanded(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("1234asd-asdas",
+                        style: GoogleFonts.poppins(
+                            fontSize: 14, fontWeight: FontWeight.w600)),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    InkWell(
+                      child: Icon(Iconsax.document_copy, size: 20),
+                    )
+                  ],
+                ))
               ],
             ),
             Row(
@@ -124,9 +136,21 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                 Text("ID Mesin",
                     style: GoogleFonts.poppins(
                         fontSize: 14, fontWeight: FontWeight.w600)),
-                Text("321455eqd-qweas",
-                    style: GoogleFonts.poppins(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
+                Expanded(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("321455eqd-qweas",
+                        style: GoogleFonts.poppins(
+                            fontSize: 14, fontWeight: FontWeight.w600)),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    InkWell(
+                      child: Icon(Iconsax.document_copy, size: 20),
+                    )
+                  ],
+                ))
               ],
             ),
             Row(
@@ -135,9 +159,21 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                 Text("ID Toko",
                     style: GoogleFonts.poppins(
                         fontSize: 14, fontWeight: FontWeight.w600)),
-                Text("321455eqd-qweas",
-                    style: GoogleFonts.poppins(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
+                Expanded(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("321455eqd-qweas",
+                        style: GoogleFonts.poppins(
+                            fontSize: 14, fontWeight: FontWeight.w600)),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    InkWell(
+                      child: Icon(Iconsax.document_copy, size: 20),
+                    )
+                  ],
+                ))
               ],
             ),
             Row(
@@ -146,9 +182,21 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                 Text("TXN Hash",
                     style: GoogleFonts.poppins(
                         fontSize: 14, fontWeight: FontWeight.w600)),
-                Text("1234asd-asdas",
-                    style: GoogleFonts.poppins(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
+                Expanded(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("1234asd-asdas",
+                        style: GoogleFonts.poppins(
+                            fontSize: 14, fontWeight: FontWeight.w600)),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    InkWell(
+                      child: Icon(Iconsax.document_copy, size: 20),
+                    )
+                  ],
+                ))
               ],
             ),
             Row(
