@@ -1,3 +1,4 @@
+import 'package:app_pembayaran/Views/Card/DetectCardScreen.dart';
 import 'package:app_pembayaran/Views/Widget/ButtonWidget.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +128,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 buttonText: "Top Up",
                                 colorSetBody: Colors.blue.shade100,
                                 colorSetText: Colors.black,
-                                functionTap: () => {}),
+                                functionTap: () => {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetectCardScreen()))
+                                    }),
                           ),
                           SizedBox(
                             width: mediaQueryWidth / 2 - 30,
@@ -228,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.fromLTRB(20, 80, 20, 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const CircleAvatar(
                     backgroundImage: AssetImage("assets/img/logo.png"),
