@@ -144,7 +144,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 buttonText: "Daftar Kartu",
                                 colorSetBody: Colors.blue.shade100,
                                 colorSetText: Colors.black,
-                                functionTap: () => {}),
+                                functionTap: () => {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetectCardScreen()))
+                                    }),
                           ),
                         ],
                       ),
