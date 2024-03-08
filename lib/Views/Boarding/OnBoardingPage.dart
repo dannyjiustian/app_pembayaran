@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 
 import '../Home/Auth/LoginScreen.dart';
-import '../Home/HomeScreen.dart';
+import '../Home/Home/HomeScreen.dart';
 
 class OnBoardingPage extends StatefulWidget {
   const OnBoardingPage({super.key, required this.valueHome});

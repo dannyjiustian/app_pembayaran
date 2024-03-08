@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Views/Boarding/OnBoardingPage.dart';
 import 'Views/Home/Auth/LoginScreen.dart';
-import 'Views/Home/HomeScreen.dart';
+import 'Views/Home/Home/HomeScreen.dart';
 
 int OnBoarding = 0, OnHomeScreen = 0;
 
