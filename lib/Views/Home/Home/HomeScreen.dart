@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../../Widget/CardBannerWidget.dart';
+import '../../Widget/CardListTransactionWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -189,8 +190,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: 5,
-                          itemBuilder: (context, index) => CardListTranasction(
-                              mediaQueryWidth: mediaQueryWidth),
+                          itemBuilder: (context, index) =>
+                              CardListTranasctionWidget(
+                                  mediaQueryWidth: mediaQueryWidth),
                           separatorBuilder: (context, index) => const SizedBox(
                                 height: 10,
                               ))),
@@ -221,16 +223,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ListView.separated(
                         padding: const EdgeInsets.all(20),
                         itemCount: 50,
-                        itemBuilder: (context, index) => CardListTranasction(
-                            mediaQueryWidth: mediaQueryWidth),
+                        itemBuilder: (context, index) =>
+                            CardListTranasctionWidget(
+                                mediaQueryWidth: mediaQueryWidth),
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
                             )),
                     ListView.separated(
                         padding: const EdgeInsets.all(20),
                         itemCount: 5,
-                        itemBuilder: (context, index) => CardListTranasction(
-                            mediaQueryWidth: mediaQueryWidth),
+                        itemBuilder: (context, index) =>
+                            CardListTranasctionWidget(
+                                mediaQueryWidth: mediaQueryWidth),
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
                             )),
@@ -323,90 +327,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
           selectedItemColor: Colors.blue.shade500,
-        ),
-      ),
-    );
-  }
-}
-
-class CardListTranasction extends StatelessWidget {
-  const CardListTranasction({
-    super.key,
-    required this.mediaQueryWidth,
-  });
-
-  final double mediaQueryWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: mediaQueryWidth,
-      margin: const EdgeInsets.symmetric(horizontal: 2.5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
-        color: Colors.blue.shade100,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const CircleAvatar(
-                  backgroundImage: AssetImage("assets/img/logo.png"),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Pembayaran",
-                            style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                          Text(
-                            "01 Mar 2024",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "-Rp.5.000",
-                            style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                          Text(
-                            "Uang Keluar",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ],
         ),
       ),
     );
