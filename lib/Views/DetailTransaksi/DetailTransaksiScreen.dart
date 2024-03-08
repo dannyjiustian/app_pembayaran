@@ -77,7 +77,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
               "assets/img/end_transaction_success.svg",
               width: 150,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Text("+Rp. 10.000",
@@ -85,7 +85,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                     fontSize: 24, fontWeight: FontWeight.w600)),
             Text("Selasa, 01 Maret 2024 13:34",
                 style: GoogleFonts.poppins(fontSize: 14)),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
@@ -101,7 +101,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                         fontSize: 14, fontWeight: FontWeight.w600)),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Text("-------------------------------------------",
