@@ -77,14 +77,14 @@ class _FormTopUpScreenState extends State<FormTopUpScreen> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               SizedBox(
                   height: 180,
                   child:
                       CardRFIDVirtualWidget(mediaQueryWidth: mediaQueryWidth)),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               Form(
@@ -102,7 +102,7 @@ class _FormTopUpScreenState extends State<FormTopUpScreen> {
                         keyboardNext: true,
                         keyboard: false,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       ButtonWidget(
@@ -112,7 +112,7 @@ class _FormTopUpScreenState extends State<FormTopUpScreen> {
                         functionTap: () async {
                           FocusScope.of(context).unfocus();
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => SuccessScreen()));
+                              builder: (context) => const SuccessScreen()));
                         },
                       ),
                     ],
