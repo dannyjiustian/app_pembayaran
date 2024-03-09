@@ -101,21 +101,75 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 230,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                      child: Swiper(
-                        itemBuilder: (BuildContext context, int index) {
-                          return CardRFIDVirtualWidget(
-                              mediaQueryWidth: mediaQueryWidth);
-                        },
-                        itemCount: 3,
-                        itemWidth: mediaQueryWidth - 40,
-                        itemHeight: 180,
-                        layout: SwiperLayout.STACK,
-                        scrollDirection: Axis.vertical,
-                        axisDirection: AxisDirection.down,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                    child: SizedBox(
+                      height: 180,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey.shade300),
+                              color: Colors.blue.shade100),
+                          width: mediaQueryWidth,
+                          child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Total Pendapatan",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Saldo",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 10,
+                                                color: Colors.black),
+                                          ),
+                                          Text(
+                                            "Rp. 10.000",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black),
+                                          ),
+                                        ]),
+                                    SizedBox(
+                                      width: 130,
+                                      child: ButtonWidget(
+                                          buttonText: "Tarik Saldo",
+                                          colorSetBody: Colors.indigo.shade500,
+                                          colorSetText: Colors.white,
+                                          functionTap: () => {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DetectCardScreen()))
+                                              }),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -123,35 +177,31 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
                         children: [
+                          ButtonWidget(
+                              buttonText: "Tambah Reader Baru",
+                              colorSetBody: Colors.blue.shade100,
+                              colorSetText: Colors.black,
+                              functionTap: () => {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DetectCardScreen()))
+                                  }),
                           SizedBox(
-                            width: mediaQueryWidth / 2 - 30,
-                            child: ButtonWidget(
-                                buttonText: "Top Up",
-                                colorSetBody: Colors.blue.shade100,
-                                colorSetText: Colors.black,
-                                functionTap: () => {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetectCardScreen()))
-                                    }),
+                            height: 20,
                           ),
-                          SizedBox(
-                            width: mediaQueryWidth / 2 - 30,
-                            child: ButtonWidget(
-                                buttonText: "Daftar Kartu",
-                                colorSetBody: Colors.blue.shade100,
-                                colorSetText: Colors.black,
-                                functionTap: () => {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetectCardScreen()))
-                                    }),
-                          ),
+                          ButtonWidget(
+                              buttonText: "Pembayaran",
+                              colorSetBody: Colors.blue.shade100,
+                              colorSetText: Colors.black,
+                              functionTap: () => {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DetectCardScreen()))
+                                  }),
                         ],
                       ),
                     ),
@@ -159,7 +209,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                   SizedBox(
                     height: 130,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
+                      padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
                       child: Swiper(
                         itemBuilder: (BuildContext context, int index) {
                           return const CardBannerWidget();
