@@ -1,4 +1,5 @@
 import 'package:app_pembayaran/Views/Card/DetectCardScreen.dart';
+import 'package:app_pembayaran/Views/Reader/ListReaderScreen.dart';
 import 'package:app_pembayaran/Views/Widget/ButtonWidget.dart';
 import 'package:app_pembayaran/Views/Widget/CardRFIDVirtualWidget.dart';
 import 'package:card_swiper/card_swiper.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../GeneratePayment/GeneratePaymentScreen.dart';
 import '../../Widget/CardBannerWidget.dart';
 import '../../Widget/CardListTransactionWidget.dart';
 import '../../Withdraw/WithdrawScreen.dart';
@@ -181,14 +183,14 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                       child: Column(
                         children: [
                           ButtonWidget(
-                              buttonText: "Tambah Reader Baru",
+                              buttonText: "Daftar Alat Reader",
                               colorSetBody: Colors.blue.shade100,
                               colorSetText: Colors.black,
                               functionTap: () => {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                DetectCardScreen()))
+                                                ListReaderScreen()))
                                   }),
                           SizedBox(
                             height: 20,
@@ -201,7 +203,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                DetectCardScreen()))
+                                                GeneratePaymentScreen()))
                                   }),
                         ],
                       ),
