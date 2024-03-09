@@ -46,6 +46,7 @@ dependencies:
   iconsax: ^0.0.8
   internet_connection_checker: ^1.0.0+1
   card_swiper: ^3.0.1
+  dotted_border: ^2.1.0
 
 dev_dependencies:
   flutter_test:
