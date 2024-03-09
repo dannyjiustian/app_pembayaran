@@ -89,7 +89,7 @@ class _FormTopUpScreenState extends State<FormTopUpScreen> {
               ),
               Form(
                 key: _formKey,
-                child: Container(
+                child: SizedBox(
                   height: bodyHeight * 0.4,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
