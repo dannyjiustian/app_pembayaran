@@ -9,6 +9,7 @@ import 'package:iconsax/iconsax.dart';
 
 import '../../Widget/CardBannerWidget.dart';
 import '../../Widget/CardListTransactionWidget.dart';
+import '../../Withdraw/WithdrawScreen.dart';
 
 class HomeScreenOutlet extends StatefulWidget {
   const HomeScreenOutlet({super.key});
@@ -161,7 +162,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                                                 Navigator.of(context).push(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            DetectCardScreen()))
+                                                            WithdrawScreen()))
                                               }),
                                     ),
                                   ],
