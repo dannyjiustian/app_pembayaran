@@ -49,7 +49,7 @@ class OnBoardingView extends StatelessWidget {
             Theme.of(context).textTheme,
           ),
         ),
-        home: HomeScreenOutlet()
+        home: HomeScreen()
         // home: OnBoarding == 0
         //     ? OnBoardingPage(
         //         valueHome: OnHomeScreen,
