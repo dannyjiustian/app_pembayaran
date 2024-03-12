@@ -7,6 +7,7 @@ import 'Views/Boarding/OnBoardingPage.dart';
 import 'Views/Home/Auth/LoginScreen.dart';
 import 'Views/Home/Home/HomeScreen.dart';
 import 'Views/Home/Home/HomeScreenOutlet.dart';
+import 'Views/Home/Home/HomeScreenTopUp.dart';
 
 int OnBoarding = 0, OnHomeScreen = 0;
 
@@ -49,7 +50,7 @@ class OnBoardingView extends StatelessWidget {
             Theme.of(context).textTheme,
           ),
         ),
-        home: HomeScreen()
+        home: HomeScreenTopUp()
         // home: OnBoarding == 0
         //     ? OnBoardingPage(
         //         valueHome: OnHomeScreen,
