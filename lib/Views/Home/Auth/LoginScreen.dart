@@ -1,6 +1,4 @@
-import 'dart:async';
-
-import 'package:app_pembayaran/Views/Home/Home/HomeScreen.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,8 +7,13 @@ import 'package:iconsax/iconsax.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../Connection/Connection.dart';
+import '../../../Models/JWT/JWTDecode.dart';
+import '../../Widget/AlertWidget.dart';
 import '../../Widget/ButtonWidget.dart';
+import '../../Widget/LoadingWidget.dart';
 import '../../Widget/TextFieldInputWidget.dart';
+import 'ResetScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +23,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  Connection conn = Connection();
+
+  bool _loading = false;
+
   final _formKey = GlobalKey<FormState>();
 
   final email = TextEditingController();
@@ -32,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final appBar = PreferredSize(
       preferredSize: Size.zero,
       child: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
+        systemOverlayStyle: const SystemUiOverlayStyle(
           // Status bar color
           statusBarColor: Colors.transparent,
 
@@ -62,11 +69,11 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 25),
+                  padding: const EdgeInsets.symmetric(vertical: 25),
                   height: bodyHeight * 0.4,
                   child: SvgPicture.asset("assets/img/login.svg"),
                 ),
-                Container(
+                SizedBox(
                   height: bodyHeight * 0.1,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -86,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Form(
                   key: _formKey,
-                  child: Container(
+                  child: SizedBox(
                     height: bodyHeight * 0.4,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -101,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardNext: true,
                             keyboard: false,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           TextFieldInputWidget(
@@ -111,35 +118,88 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardNext: false,
                             keyboard: true,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
-                          // _loading
-                          //     ? LoadingWidget()
-                          //     :
-                          ButtonWidget(
-                            buttonText: "Login",
-                            colorSetBody: Colors.blue,
-                            colorSetText: Colors.white,
-                            functionTap: () async {
-                              FocusScope.of(context).unfocus();
-                              Navigator.pop(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomeScreen()));
-                            },
-                          ),
-                          SizedBox(
+                          _loading
+                              ? const LoadingWidget()
+                              : ButtonWidget(
+                                  buttonText: "Login",
+                                  colorSetBody: Colors.blue,
+                                  colorSetText: Colors.white,
+                                  functionTap: () async {
+                                    FocusScope.of(context).unfocus();
+                                    if (_formKey.currentState!.validate()) {
+                                      SharedPreferences localStorage =
+                                          await SharedPreferences.getInstance();
+                                      setState(() {
+                                        _loading = true;
+                                      });
+                                      var res = await conn.loginAction(
+                                          email.text, password.text);
+                                      setState(() {
+                                        _loading = false;
+                                      });
+                                      if (res == null) {
+                                        AlertWidget(
+                                                mediaQueryWidth,
+                                                Iconsax.close_square,
+                                                Colors.red.shade300,
+                                                "Error!",
+                                                "${res!.message}")
+                                            .show(context);
+                                        return;
+                                      }
+
+                                      if (res!.status) {
+                                        localStorage.setString('username',
+                                            (res.data?.username).toString());
+                                        localStorage.setString('accessToken',
+                                            (res.data?.accessToken).toString());
+                                        localStorage.setString(
+                                            'refreshToken',
+                                            (res.data?.refreshToken)
+                                                .toString());
+                                        // Navigator.pushReplacement(
+                                        //     context,
+                                        //     MaterialPageRoute(
+                                        //         builder: (context) =>
+                                        //             HomeScreen()));
+                                        var data = JWTDecode.fromJson(JWT
+                                            .decode(res.data?.accessToken)
+                                            .payload);
+
+                                        print(data.role);
+                                      } else {
+                                        AlertWidget(
+                                                mediaQueryWidth,
+                                                Iconsax.close_square,
+                                                Colors.red.shade300,
+                                                "Error!",
+                                                "${res!.message}")
+                                            .show(context);
+                                      }
+                                    } else {
+                                      AlertWidget(
+                                              mediaQueryWidth,
+                                              Iconsax.info_circle,
+                                              Colors.amber.shade400,
+                                              "Masih Kosong!",
+                                              "Harap isi input field yang diperlukan / format salah!")
+                                          .show(context);
+                                    }
+                                  },
+                                ),
+                          const SizedBox(
                             height: 10,
                           ),
                           Center(
                             child: InkWell(
                               onTap: () {
-                                print("Forgot");
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) => ForgotScreen()));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ResetScreen()));
                               },
                               child: Ink(
                                 child: Text(
@@ -156,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: bodyHeight * 0.1,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -165,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         "Belum Punya Akun?",
                         style: GoogleFonts.poppins(fontSize: 11),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       InkWell(
