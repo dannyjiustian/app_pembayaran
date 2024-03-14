@@ -13,6 +13,7 @@ import '../../Widget/AlertWidget.dart';
 import '../../Widget/ButtonWidget.dart';
 import '../../Widget/LoadingWidget.dart';
 import '../../Widget/TextFieldInputWidget.dart';
+import 'RegisterScreen.dart';
 import 'ResetScreen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -230,11 +231,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       InkWell(
                         onTap: () {
-                          print("Register");
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => RegisterScreen()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterScreen()));
                         },
                         child: Ink(
                           child: Text(
