@@ -58,6 +58,7 @@ dependencies:
   pda_rfid_scanner: ^0.0.2+1
   nfc_manager: ^3.4.0
   lottie: ^3.0.0
+  dart_jsonwebtoken: ^2.13.0
 
 dev_dependencies:
   flutter_test:
