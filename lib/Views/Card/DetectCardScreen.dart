@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:lottie/lottie.dart';
 
 import '../DaftarKartu/DaftarKartuScreen.dart';
 import '../Widget/IconAppbarCostuimeWidget.dart';
@@ -76,10 +77,7 @@ class _DetectCardScreenState extends State<DetectCardScreen> {
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SvgPicture.asset(
-                    "assets/img/contactless.svg",
-                    width: 200,
-                  ),
+                  Lottie.asset('assets/img/contactless.json'),
                   const SizedBox(
                     height: 20,
                   ),
