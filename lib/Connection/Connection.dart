@@ -41,6 +41,32 @@ class Connection {
       if (response.statusCode == 200) {
         return Login.fromJson(data);
       } else {
+        return Login.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return Login.fromJson(data);
+    }
+  }
+
+  Future registerAction(String name, String username, String email,
+      String password, String? role) async {
+    try {
+      Uri uri = Uri.parse("${url}register");
+      final response = await http.post(uri, body: {
+        "name": name,
+        "email": email,
+        "username": username,
+        "password": password,
+        "role": role,
+      });
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return Login.fromJson(data);
+      } else {
         print(data);
         return Login.fromJson(data);
       }
