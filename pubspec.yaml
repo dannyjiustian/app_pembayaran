@@ -47,6 +47,17 @@ dependencies:
   internet_connection_checker: ^1.0.0+1
   card_swiper: ^3.0.1
   dotted_border: ^2.1.0
+  http: ^0.13.6
+  json_annotation: ^4.8.1
+  build_runner: ^2.3.3
+  json_serializable: ^6.6.2
+  qr_code_scanner: ^1.0.1
+  vibration: ^1.8.4
+  async: ^2.10.0
+  rfid: ^0.0.28
+  pda_rfid_scanner: ^0.0.2+1
+  nfc_manager: ^3.4.0
+  lottie: ^3.0.0
 
 dev_dependencies:
   flutter_test:
