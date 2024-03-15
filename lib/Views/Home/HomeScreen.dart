@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Connection/Connection.dart';
@@ -15,6 +16,7 @@ import '../Widget/CardBannerWidget.dart';
 import '../Widget/CardListTransactionWidget.dart';
 import '../Widget/CardRFIDVirtualWidget.dart';
 import '../Widget/LoadingCardRFIDVirtualWidget.dart';
+import '../Widget/LoadingListTransactionWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -231,8 +233,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 colorSetBody: Colors.blue.shade100,
                                 colorSetText: Colors.black,
                                 functionTap: () async {
-                                  // var res = await conn.getCardByID(
-                                  //     "a270e97f-ca5e-4547-be7d-25ee71f18824");
+                                  // var res =
+                                  //     await conn.getTransasctionByIDWithLimit(
+                                  //         "a270e97f-ca5e-4547-be7d-25ee71f18824",
+                                  //         offset: 1);
                                   // print(res);
                                   // print(jwtData!.id_user);
                                   // Navigator.of(context).push(
@@ -286,18 +290,62 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                      child: ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: 5,
-                          itemBuilder: (context, index) =>
-                              CardListTranasctionWidget(
-                                  mediaQueryWidth: mediaQueryWidth),
-                          separatorBuilder: (context, index) => const SizedBox(
-                                height: 10,
-                              ))),
+                  FutureBuilder(
+                      future: conn.getTransasctionByIDWithLimit(
+                          "${jwtData?.id_user}",
+                          take: 5),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                            child: LoadingListTransactionsWidget(
+                                mediaQueryWidth: mediaQueryWidth),
+                          ); // Show loading indicator while fetching data
+                        } else {
+                          if (snapshot.data.data != null) {
+                            return Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                                child: ListView.separated(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: snapshot.data!.data.length,
+                                    itemBuilder: (context, index) =>
+                                        CardListTranasctionWidget(
+                                            type:
+                                                snapshot.data!.data[index].type,
+                                            updatedAt: snapshot
+                                                .data!.data[index].updated_at,
+                                            totalPayment: snapshot.data!
+                                                .data[index].total_payment,
+                                            mediaQueryWidth: mediaQueryWidth),
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(
+                                          height: 10,
+                                        )));
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                children: [
+                                  Lottie.asset(
+                                      'assets/img/lottie/no_transaction.json',
+                                      width: 200),
+                                  Text(
+                                    "Belum Ada Transaksi!",
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        }
+                      }),
                 ],
               ),
             ),
@@ -327,6 +375,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: 50,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
+                                type: 0,
+                                updatedAt: "",
+                                totalPayment: 0,
                                 mediaQueryWidth: mediaQueryWidth),
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
@@ -336,6 +387,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: 5,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
+                                type: 0,
+                                updatedAt: "",
+                                totalPayment: 0,
                                 mediaQueryWidth: mediaQueryWidth),
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
