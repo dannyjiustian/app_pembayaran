@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../../Widget/CardBannerWidget.dart';
-import '../../Widget/CardListTransactionWidget.dart';
+import '../Widget/CardBannerWidget.dart';
+import '../Widget/CardListTransactionWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
