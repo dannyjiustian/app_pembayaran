@@ -7,12 +7,15 @@ import 'package:iconsax/iconsax.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../Connection/Connection.dart';
-import '../../../Models/JWT/JWTDecode.dart';
-import '../../Widget/AlertWidget.dart';
-import '../../Widget/ButtonWidget.dart';
-import '../../Widget/LoadingWidget.dart';
-import '../../Widget/TextFieldInputWidget.dart';
+import '../../Connection/Connection.dart';
+import '../../Models/JWT/JWTDecode.dart';
+import '../Widget/AlertWidget.dart';
+import '../Widget/ButtonWidget.dart';
+import '../Widget/LoadingWidget.dart';
+import '../Widget/TextFieldInputWidget.dart';
+import '../Home/HomeScreen.dart';
+import '../Home/HomeScreenCounter.dart';
+import '../Home/HomeScreenOutlet.dart';
 import 'RegisterScreen.dart';
 import 'ResetScreen.dart';
 
@@ -161,16 +164,41 @@ class _LoginScreenState extends State<LoginScreen> {
                                             'refreshToken',
                                             (res.data?.refreshToken)
                                                 .toString());
-                                        // Navigator.pushReplacement(
-                                        //     context,
-                                        //     MaterialPageRoute(
-                                        //         builder: (context) =>
-                                        //             HomeScreen()));
+
                                         var data = JWTDecode.fromJson(JWT
                                             .decode(res.data?.accessToken)
                                             .payload);
 
                                         print(data.role);
+                                        switch (data.role) {
+                                          case '1':
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HomeScreen()));
+                                            break;
+                                          case '2':
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HomeScreenOutlet()));
+                                            break;
+                                          case '3':
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HomeScreenCounter()));
+                                            break;
+                                          default:
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HomeScreen())); // Default value
+                                        }
                                       } else {
                                         AlertWidget(
                                                 mediaQueryWidth,
