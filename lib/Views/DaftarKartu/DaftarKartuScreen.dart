@@ -79,8 +79,11 @@ class _DaftarKartuScreenState extends State<DaftarKartuScreen> {
               ),
               SizedBox(
                   height: 180,
-                  child:
-                      CardRFIDVirtualWidget(mediaQueryWidth: mediaQueryWidth)),
+                  child: CardRFIDVirtualWidget(
+                      idCard: "",
+                      saldo: 0,
+                      walletAddress: "",
+                      mediaQueryWidth: mediaQueryWidth)),
               SizedBox(
                 height: 30,
               ),
