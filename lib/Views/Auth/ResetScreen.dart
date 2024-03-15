@@ -9,13 +9,13 @@ import 'package:iconsax/iconsax.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../Connection/Connection.dart';
-import '../../../Models/JWT/JWTDecode.dart';
-import '../../Widget/AlertWidget.dart';
-import '../../Widget/ButtonWidget.dart';
-import '../../Widget/CardAlertCustomWidget.dart';
-import '../../Widget/LoadingWidget.dart';
-import '../../Widget/TextFieldInputWidget.dart';
+import '../../Connection/Connection.dart';
+import '../../Models/JWT/JWTDecode.dart';
+import '../Widget/AlertWidget.dart';
+import '../Widget/ButtonWidget.dart';
+import '../Widget/CardAlertCustomWidget.dart';
+import '../Widget/LoadingWidget.dart';
+import '../Widget/TextFieldInputWidget.dart';
 import 'LoginScreen.dart';
 
 class ResetScreen extends StatefulWidget {
