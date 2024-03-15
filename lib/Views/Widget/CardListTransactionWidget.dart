@@ -2,13 +2,21 @@ import 'package:app_pembayaran/Views/DetailTransaksi/DetailTransaksiScreen.dart'
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../Function/formatDate.dart';
+import '../../Function/formatToRupiah.dart';
+
 class CardListTranasctionWidget extends StatelessWidget {
   const CardListTranasctionWidget({
     super.key,
     required this.mediaQueryWidth,
+    required this.type,
+    required this.totalPayment,
+    required this.updatedAt,
   });
 
   final double mediaQueryWidth;
+  final int type, totalPayment;
+  final String updatedAt;
 
   @override
   Widget build(BuildContext context) {
@@ -46,14 +54,18 @@ class CardListTranasctionWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Pembayaran",
+                              type == 0
+                                  ? "Pembayaran"
+                                  : (type == 1)
+                                      ? "Top Up"
+                                      : "",
                               style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black),
                             ),
                             Text(
-                              "01 Mar 2024",
+                              formatDate(updatedAt),
                               style: GoogleFonts.poppins(
                                   fontSize: 12, color: Colors.black),
                             ),
@@ -66,14 +78,18 @@ class CardListTranasctionWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              "-Rp.5.000",
+                              formatToRupiah(totalPayment, type: type),
                               style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black),
                             ),
                             Text(
-                              "Uang Keluar",
+                              type == 0
+                                  ? "Uang Keluar"
+                                  : (type == 1)
+                                      ? "Uang Masuk"
+                                      : "",
                               style: GoogleFonts.poppins(
                                   fontSize: 12, color: Colors.black),
                             ),
