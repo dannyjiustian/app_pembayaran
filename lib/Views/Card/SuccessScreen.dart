@@ -4,7 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../Home/Home/HomeScreen.dart';
+import '../Home/HomeScreen.dart';
 import '../Widget/ButtonWidget.dart';
 
 class SuccessScreen extends StatelessWidget {
