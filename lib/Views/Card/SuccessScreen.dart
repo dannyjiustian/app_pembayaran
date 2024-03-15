@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 
 import '../Home/HomeScreen.dart';
 import '../Widget/ButtonWidget.dart';
@@ -51,7 +52,7 @@ class SuccessScreen extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 25, horizontal: 60),
                   height: bodyHeight * 0.5,
-                  child: SvgPicture.asset("assets/img/success.svg"),
+                  child: Lottie.asset('assets/img/lottie/success.json'),
                 ),
                 Container(
                     height: bodyHeight * 0.3,
@@ -61,6 +62,7 @@ class SuccessScreen extends StatelessWidget {
                           "Selamat Telah Melakukan Top Up!",
                           style: GoogleFonts.poppins(
                               fontSize: 20, fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
                         ),
                         Text(
                           "Saldo berhasil ditambahkan keakunmu, silakan kembali ke home untuk mengeceknya!",
