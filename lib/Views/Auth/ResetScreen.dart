@@ -75,7 +75,7 @@ class _ResetScreenState extends State<ResetScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 25),
                   height: bodyHeight * 0.4,
-                  child: SvgPicture.asset("assets/img/reset.svg"),
+                  child: SvgPicture.asset("assets/img/svg/reset.svg"),
                 ),
                 SizedBox(
                   height: bodyHeight * 0.1,
