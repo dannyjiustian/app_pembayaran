@@ -8,10 +8,10 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../../GeneratePayment/GeneratePaymentScreen.dart';
-import '../../Widget/CardBannerWidget.dart';
-import '../../Widget/CardListTransactionWidget.dart';
-import '../../Withdraw/WithdrawScreen.dart';
+import '../GeneratePayment/GeneratePaymentScreen.dart';
+import '../Widget/CardBannerWidget.dart';
+import '../Widget/CardListTransactionWidget.dart';
+import '../Withdraw/WithdrawScreen.dart';
 
 class HomeScreenOutlet extends StatefulWidget {
   const HomeScreenOutlet({super.key});
