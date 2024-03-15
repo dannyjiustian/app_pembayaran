@@ -77,7 +77,7 @@ class _DetectCardScreenState extends State<DetectCardScreen> {
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Lottie.asset('assets/img/contactless.json'),
+                  Lottie.asset('assets/img/lottie/contactless.json'),
                   const SizedBox(
                     height: 20,
                   ),
