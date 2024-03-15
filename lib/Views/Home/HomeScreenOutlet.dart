@@ -245,6 +245,9 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                           itemCount: 5,
                           itemBuilder: (context, index) =>
                               CardListTranasctionWidget(
+                                  type: 0,
+                                  updatedAt: "",
+                                  totalPayment: 0,
                                   mediaQueryWidth: mediaQueryWidth),
                           separatorBuilder: (context, index) => const SizedBox(
                                 height: 10,
@@ -278,6 +281,9 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                         itemCount: 50,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
+                                type: 0,
+                                updatedAt: "",
+                                totalPayment: 0,
                                 mediaQueryWidth: mediaQueryWidth),
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
@@ -287,6 +293,9 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                         itemCount: 5,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
+                                type: 0,
+                                updatedAt: "",
+                                totalPayment: 0,
                                 mediaQueryWidth: mediaQueryWidth),
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
