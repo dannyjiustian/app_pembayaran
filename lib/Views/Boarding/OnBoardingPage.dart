@@ -1,8 +1,8 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
@@ -36,28 +36,28 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           title: "Transparansi",
           body:
               "Memberikan transaparansi untuk setiap transaksi kartu yang dilakukan.",
-          image: SvgPicture.asset("assets/img/jadwal.svg"),
+          image: Lottie.asset('assets/img/lottie/transaction.json'),
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Keamanan",
           body:
               "Memberikan keamanan yang terintegrasi dengan sistem blockchain.",
-          image: SvgPicture.asset("assets/img/monitoring.svg"),
+          image: Lottie.asset('assets/img/lottie/secure.json'),
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Fleksibel",
           body:
               "Memberikan fleksibilitas untuk melakukan pelacakan setiap transaksi.",
-          image: SvgPicture.asset("assets/img/terhubung.svg"),
+          image: Lottie.asset('assets/img/lottie/tracking.json'),
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Permintaan Access",
           body:
               "Harap berikan access ke internet agar bisa terkoneksi secara realtime.",
-          image: SvgPicture.asset("assets/img/alert.svg"),
+          image: Lottie.asset('assets/img/lottie/access.json'),
           decoration: pageDecoration,
         ),
       ],
