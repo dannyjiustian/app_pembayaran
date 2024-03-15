@@ -9,19 +9,19 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../../GeneratePayment/GeneratePaymentScreen.dart';
-import '../../Widget/CardBannerWidget.dart';
-import '../../Widget/CardListTransactionWidget.dart';
-import '../../Withdraw/WithdrawScreen.dart';
+import '../GeneratePayment/GeneratePaymentScreen.dart';
+import '../Widget/CardBannerWidget.dart';
+import '../Widget/CardListTransactionWidget.dart';
+import '../Withdraw/WithdrawScreen.dart';
 
-class HomeScreenTopUp extends StatefulWidget {
-  const HomeScreenTopUp({super.key});
+class HomeScreenCounter extends StatefulWidget {
+  const HomeScreenCounter({super.key});
 
   @override
-  State<HomeScreenTopUp> createState() => _HomeScreenTopUpState();
+  State<HomeScreenCounter> createState() => _HomeScreenCounterState();
 }
 
-class _HomeScreenTopUpState extends State<HomeScreenTopUp> {
+class _HomeScreenCounterState extends State<HomeScreenCounter> {
   int _selectedIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
 
