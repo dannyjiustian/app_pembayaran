@@ -1,7 +1,8 @@
 import 'dart:convert';
-
-import 'package:app_pembayaran/Models/Auth/Login.dart';
 import 'package:http/http.dart' as http;
+
+import '../Models/Auth/Login.dart';
+import '../Models/ListCard/ListCard.dart';
 
 class Connection {
   final String url = "http://192.168.100.75:3000/api/v1/";
@@ -75,6 +76,25 @@ class Connection {
           (json.decode('{"status": false, "message": "${e.toString()}"}')
               as Map<String, dynamic>);
       return Login.fromJson(data);
+    }
+  }
+
+  Future getCardByID(String? id_user) async {
+    try {
+      Uri uri = Uri.parse("${url}card/id-user/${id_user}");
+      final response = await http.get(uri);
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return ListCard.fromJson(data);
+      } else {
+        return ListCard.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return ListCard.fromJson(data);
     }
   }
 }
