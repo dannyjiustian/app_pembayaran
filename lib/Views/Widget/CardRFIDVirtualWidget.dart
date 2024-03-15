@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../Function/cutString.dart';
+import '../../Function/formatToRupiah.dart';
+
 class CardRFIDVirtualWidget extends StatelessWidget {
   const CardRFIDVirtualWidget({
     super.key,
@@ -14,28 +17,6 @@ class CardRFIDVirtualWidget extends StatelessWidget {
   final String idCard, walletAddress;
   final double mediaQueryWidth;
   final int saldo;
-
-  String formatToRupiah(int balance) {
-    String formattedBalance = balance.toString();
-    List<String> parts = [];
-
-    while (formattedBalance.length > 3) {
-      parts.add(formattedBalance.substring(formattedBalance.length - 3));
-      formattedBalance =
-          formattedBalance.substring(0, formattedBalance.length - 3);
-    }
-    parts.add(formattedBalance);
-
-    return 'Rp. ' + parts.reversed.join('.');
-  }
-
-  String cutWalletAddress(String walletAddress) {
-    if (walletAddress.length <= 10) {
-      return walletAddress;
-    } else {
-      return walletAddress.substring(0, 10) + 'xxxx';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
