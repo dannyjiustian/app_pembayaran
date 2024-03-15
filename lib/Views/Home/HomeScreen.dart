@@ -1,14 +1,20 @@
-import 'package:app_pembayaran/Views/Card/DetectCardScreen.dart';
-import 'package:app_pembayaran/Views/Widget/ButtonWidget.dart';
-import 'package:app_pembayaran/Views/Widget/CardRFIDVirtualWidget.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Connection/Connection.dart';
+import '../../Models/JWT/JWTDecode.dart';
+import '../Card/DetectCardScreen.dart';
+import '../Widget/ButtonWidget.dart';
 import '../Widget/CardBannerWidget.dart';
 import '../Widget/CardListTransactionWidget.dart';
+import '../Widget/CardRFIDVirtualWidget.dart';
+import '../Widget/LoadingCardRFIDVirtualWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,9 +23,31 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+JWTDecode? jwtData;
+String? accessToken;
+
 class _HomeScreenState extends State<HomeScreen> {
+  Connection conn = Connection();
   int _selectedIndex = 0;
   PageController _pageController = PageController(initialPage: 0);
+
+  Future checkLocalStorage() async {
+    final pref = await SharedPreferences.getInstance();
+
+    accessToken = pref.getString('accessToken');
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkLocalStorage().then((value) {
+      setState(() {
+        jwtData =
+            JWTDecode.fromJson(JWT.decode(accessToken.toString()).payload);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Hi, Budi 👋",
+                                "Hi, ${jwtData?.name} 👋",
                                 style: GoogleFonts.poppins(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
@@ -101,24 +129,94 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 230,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                      child: Swiper(
-                        itemBuilder: (BuildContext context, int index) {
-                          return CardRFIDVirtualWidget(
-                              mediaQueryWidth: mediaQueryWidth);
-                        },
-                        itemCount: 3,
-                        itemWidth: mediaQueryWidth - 40,
-                        itemHeight: 180,
-                        layout: SwiperLayout.STACK,
-                        scrollDirection: Axis.vertical,
-                        axisDirection: AxisDirection.down,
-                      ),
-                    ),
-                  ),
+                  FutureBuilder(
+                      future: conn.getCardByID("${jwtData?.id_user}"),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return LoadingCardRFIDVirtualWidget(
+                            mediaQueryWidth: mediaQueryWidth,
+                          ); // Show loading indicator while fetching data
+                        } else {
+                          if (snapshot.data.data != null) {
+                            return SizedBox(
+                              height: 230,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                                child: Swiper(
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return CardRFIDVirtualWidget(
+                                      idCard:
+                                          snapshot.data!.data[index].id_card,
+                                      saldo: snapshot.data!.data[index].balance,
+                                      walletAddress: snapshot
+                                          .data!.data[index].wallet_address,
+                                      mediaQueryWidth: mediaQueryWidth,
+                                    );
+                                  },
+                                  itemCount: snapshot.data!.data.length,
+                                  itemWidth: mediaQueryWidth - 40,
+                                  itemHeight: 180,
+                                  layout: SwiperLayout.STACK,
+                                  scrollDirection: Axis.vertical,
+                                  axisDirection: AxisDirection.down,
+                                  loop: snapshot.data!.data.length > 1
+                                      ? true
+                                      : false,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetectCardScreen()));
+                                },
+                                child: DottedBorder(
+                                  borderType: BorderType.RRect,
+                                  radius: const Radius.circular(10),
+                                  strokeWidth: 2,
+                                  dashPattern: const [6, 3, 6, 3],
+                                  color: Colors.grey.shade500,
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(12)),
+                                    child: Container(
+                                      height: 130,
+                                      width: mediaQueryWidth - 50,
+                                      color: Colors.blue.shade50,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Iconsax.cards,
+                                            size: 50,
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            "Daftar Kartu",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      }),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
                     child: Padding(
@@ -132,12 +230,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 buttonText: "Top Up",
                                 colorSetBody: Colors.blue.shade100,
                                 colorSetText: Colors.black,
-                                functionTap: () => {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetectCardScreen()))
-                                    }),
+                                functionTap: () async {
+                                  // var res = await conn.getCardByID(
+                                  //     "a270e97f-ca5e-4547-be7d-25ee71f18824");
+                                  // print(res);
+                                  // print(jwtData!.id_user);
+                                  // Navigator.of(context).push(
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) =>
+                                  //             DetectCardScreen()))
+                                }),
                           ),
                           SizedBox(
                             width: mediaQueryWidth / 2 - 30,
