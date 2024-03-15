@@ -110,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(0, 30, 0, 15),
                   height: bodyHeight * 0.3,
-                  child: SvgPicture.asset("assets/img/register.svg"),
+                  child: SvgPicture.asset("assets/img/svg/register.svg"),
                 ),
                 SizedBox(
                   height: bodyHeight * 0.1,
