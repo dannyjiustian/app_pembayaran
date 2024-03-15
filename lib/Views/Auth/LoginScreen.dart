@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 25),
                   height: bodyHeight * 0.4,
-                  child: SvgPicture.asset("assets/img/login.svg"),
+                  child: SvgPicture.asset("assets/img/svg/login.svg"),
                 ),
                 SizedBox(
                   height: bodyHeight * 0.1,
@@ -168,8 +168,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                         var data = JWTDecode.fromJson(JWT
                                             .decode(res.data?.accessToken)
                                             .payload);
-
-                                        print(data.role);
                                         switch (data.role) {
                                           case '1':
                                             Navigator.pushReplacement(
