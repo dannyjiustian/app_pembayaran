@@ -6,9 +6,36 @@ class CardRFIDVirtualWidget extends StatelessWidget {
   const CardRFIDVirtualWidget({
     super.key,
     required this.mediaQueryWidth,
+    required this.idCard,
+    required this.saldo,
+    required this.walletAddress,
   });
 
+  final String idCard, walletAddress;
   final double mediaQueryWidth;
+  final int saldo;
+
+  String formatToRupiah(int balance) {
+    String formattedBalance = balance.toString();
+    List<String> parts = [];
+
+    while (formattedBalance.length > 3) {
+      parts.add(formattedBalance.substring(formattedBalance.length - 3));
+      formattedBalance =
+          formattedBalance.substring(0, formattedBalance.length - 3);
+    }
+    parts.add(formattedBalance);
+
+    return 'Rp. ' + parts.reversed.join('.');
+  }
+
+  String cutWalletAddress(String walletAddress) {
+    if (walletAddress.length <= 10) {
+      return walletAddress;
+    } else {
+      return walletAddress.substring(0, 10) + 'xxxx';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +84,7 @@ class CardRFIDVirtualWidget extends StatelessWidget {
                             fontSize: 10, color: Colors.black),
                       ),
                       Text(
-                        "Rp. 10.000",
+                        formatToRupiah(saldo),
                         style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -65,7 +92,7 @@ class CardRFIDVirtualWidget extends StatelessWidget {
                       ),
                     ]),
                 Text(
-                  "0xC660DC42xxxxxx",
+                  cutWalletAddress(walletAddress),
                   style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
