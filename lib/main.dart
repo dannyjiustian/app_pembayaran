@@ -1,15 +1,18 @@
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Models/JWT/JWTDecode.dart';
 import 'Views/Boarding/OnBoardingPage.dart';
-import 'Views/Home/Auth/LoginScreen.dart';
-import 'Views/Home/Home/HomeScreen.dart';
-import 'Views/Home/Home/HomeScreenOutlet.dart';
-import 'Views/Home/Home/HomeScreenTopUp.dart';
+import 'Views/Auth/LoginScreen.dart';
+import 'Views/Home/HomeScreen.dart';
+import 'Views/Home/HomeScreenOutlet.dart';
+import 'Views/Home/HomeScreenCounter.dart';
 
-int OnBoarding = 0, OnHomeScreen = 0;
+int onBoarding = 0, onHomeScreen = 0;
+JWTDecode? data;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,44 +23,53 @@ void main() async {
   runApp(const OnBoardingView());
 }
 
-Future initOnBoarding() async {
+Future<void> initOnBoarding() async {
   final pref = await SharedPreferences.getInstance();
 
-  String? email, nama, username, token;
-  email = pref.getString('email');
-  nama = pref.getString('nama');
-  username = pref.getString('username');
-  token = pref.getString('token');
-  if (email != null && nama != null && username != null && token != null) {
-    OnHomeScreen = 1;
+  String? accessToken = pref.getString('accessToken');
+  if (accessToken != null) {
+    onHomeScreen = 1;
+    data = JWTDecode.fromJson(JWT.decode(accessToken).payload);
   }
   int? boarding = pref.getInt('OnBoarding');
   if (boarding != null && boarding == 1) {
-    return OnBoarding = 1;
+    onBoarding = 1;
   }
 }
 
 class OnBoardingView extends StatelessWidget {
-  const OnBoardingView({super.key});
+  const OnBoardingView({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          textTheme: GoogleFonts.poppinsTextTheme(
-            Theme.of(context).textTheme,
-          ),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        textTheme: GoogleFonts.poppinsTextTheme(
+          Theme.of(context).textTheme,
         ),
-        home: HomeScreenTopUp()
-        // home: OnBoarding == 0
-        //     ? OnBoardingPage(
-        //         valueHome: OnHomeScreen,
-        //       )
-        //     : OnHomeScreen == 0
-        //         ? LoginScreen()
-        //         : HomeScreen(),
-        );
+      ),
+      home: onBoarding == 0
+          ? OnBoardingPage(
+              valueHome: onHomeScreen,
+            )
+          : onHomeScreen == 0
+              ? const LoginScreen()
+              : _buildSwitch(context),
+    );
+  }
+
+  Widget _buildSwitch(BuildContext context) {
+    switch (data?.role) {
+      case '1':
+        return const HomeScreen();
+      case '2':
+        return const HomeScreenOutlet();
+      case '3':
+        return const HomeScreenCounter();
+      default:
+        return const HomeScreen();
+    }
   }
 }
