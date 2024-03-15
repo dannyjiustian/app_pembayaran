@@ -82,8 +82,11 @@ class _FormTopUpScreenState extends State<FormTopUpScreen> {
               ),
               SizedBox(
                   height: 180,
-                  child:
-                      CardRFIDVirtualWidget(mediaQueryWidth: mediaQueryWidth)),
+                  child: CardRFIDVirtualWidget(
+                      idCard: "a270e97f-ca5e-4547-be7d-25ee71f18824",
+                      saldo: 0,
+                      walletAddress: "",
+                      mediaQueryWidth: mediaQueryWidth)),
               const SizedBox(
                 height: 30,
               ),
