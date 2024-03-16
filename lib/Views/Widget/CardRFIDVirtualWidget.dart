@@ -73,7 +73,7 @@ class CardRFIDVirtualWidget extends StatelessWidget {
                       ),
                     ]),
                 Text(
-                  cutWalletAddress(walletAddress),
+                  cutString(walletAddress),
                   style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
