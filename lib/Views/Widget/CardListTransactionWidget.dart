@@ -1,8 +1,9 @@
 import 'package:app_pembayaran/Views/DetailTransaksi/DetailTransaksiScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../Function/formatDate.dart';
+import '../../Function/formatDateOnly.dart';
 import '../../Function/formatToRupiah.dart';
 
 class CardListTranasctionWidget extends StatelessWidget {
@@ -12,18 +13,20 @@ class CardListTranasctionWidget extends StatelessWidget {
     required this.type,
     required this.totalPayment,
     required this.updatedAt,
+    required this.idTransaction,
+    required this.status,
   });
 
   final double mediaQueryWidth;
   final int type, totalPayment;
-  final String updatedAt;
+  final String updatedAt, idTransaction, status;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => DetailTransaksiScreen()));
+            MaterialPageRoute(builder: (context) => DetailTransaksiScreen(idTransaction: idTransaction,)));
       },
       child: Container(
         width: mediaQueryWidth,
@@ -40,8 +43,15 @@ class CardListTranasctionWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CircleAvatar(
-                    backgroundImage: AssetImage("assets/img/logo.png"),
+                  CircleAvatar(
+                    // ignore: sized_box_for_whitespace
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      child: SvgPicture.asset(
+                        "assets/img/svg/${status == "Selesai" ? "success" : status == "Batal" ? "error" : "process"}.svg",
+                      ),
+                    ),
                   ),
                   const SizedBox(
                     width: 10,
@@ -65,7 +75,7 @@ class CardListTranasctionWidget extends StatelessWidget {
                                   color: Colors.black),
                             ),
                             Text(
-                              formatDate(updatedAt),
+                              formatDateOnly(updatedAt),
                               style: GoogleFonts.poppins(
                                   fontSize: 12, color: Colors.black),
                             ),
