@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../Models/Auth/Login.dart';
+import '../Models/DetailTransaction/DetailTransaction.dart';
 import '../Models/ListCard/ListCard.dart';
 import '../Models/ListTransaction/ListTransaction.dart';
 
@@ -99,11 +100,17 @@ class Connection {
     }
   }
 
-  Future getTransasctionByIDWithLimit(String id_user, {int? take}) async {
+  Future getTransasctionByIDUser(String id_user,
+      {int? take, bool? status}) async {
     try {
-      String urlQuery = (take == null)
-          ? "${url}transaction/id-user/${id_user}"
-          : "${url}transaction/id-user/${id_user}?take=${take}";
+      String urlQuery = "${url}transaction/id-user/$id_user";
+
+      if (take != null) {
+        urlQuery += "?take=$take";
+        if (status != null) urlQuery += "&status=$status";
+      } else if (status != null) {
+        urlQuery += "?status=$status";
+      }
       Uri uri = Uri.parse(urlQuery);
       final response = await http.get(uri);
       Map<String, dynamic> data =
@@ -118,6 +125,25 @@ class Connection {
           (json.decode('{"status": false, "message": "${e.toString()}"}')
               as Map<String, dynamic>);
       return ListTransaction.fromJson(data);
+    }
+  }
+
+  Future getTransasctionByIDTransaction(String id_transaction) async {
+    try {
+      Uri uri = Uri.parse("${url}transaction/$id_transaction");
+      final response = await http.get(uri);
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return DetailTransaction.fromJson(data);
+      } else {
+        return DetailTransaction.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return DetailTransaction.fromJson(data);
     }
   }
 }
