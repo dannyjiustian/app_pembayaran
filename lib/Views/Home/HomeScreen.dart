@@ -3,12 +3,14 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Connection/Connection.dart';
+import '../../Function/formatDateOnly.dart';
 import '../../Models/JWT/JWTDecode.dart';
 import '../Card/DetectCardScreen.dart';
 import '../Widget/ButtonWidget.dart';
@@ -105,8 +107,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const CircleAvatar(
-                            backgroundImage: AssetImage("assets/img/logo.png"),
+                          CircleAvatar(
+                            child: SizedBox(
+                              width:
+                                  48, // Set the width and height according to your requirement
+                              height: 48,
+                              child:
+                                  SvgPicture.asset("assets/img/svg/user.svg"),
+                            ),
                           ),
                           const SizedBox(
                             width: 10,
@@ -234,8 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 colorSetText: Colors.black,
                                 functionTap: () async {
                                   // var res =
-                                  //     await conn.getTransasctionByIDWithLimit(
-                                  //         "a270e97f-ca5e-4547-be7d-25ee71f18824",
+                                  //     await conn.getTransasctionByIDUser(
+                                  //         "${jwtData?.id_user}",
                                   //         offset: 1);
                                   // print(res);
                                   // print(jwtData!.id_user);
@@ -289,11 +297,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.black),
                       ),
                     ),
-                    
                   ),
                   FutureBuilder(
-                      future: conn.getTransasctionByIDWithLimit(
+                      future: conn.getTransasctionByIDUser(
                           "${jwtData?.id_user}",
+                          status: true,
                           take: 5),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -315,6 +323,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     itemCount: snapshot.data!.data.length,
                                     itemBuilder: (context, index) =>
                                         CardListTranasctionWidget(
+                                            status: snapshot
+                                                .data!.data[index].status,
+                                            idTransaction: snapshot.data!
+                                                .data[index].id_transaction,
                                             type:
                                                 snapshot.data!.data[index].type,
                                             updatedAt: snapshot
@@ -371,30 +383,114 @@ class _HomeScreenState extends State<HomeScreen> {
                     ]),
                 body: TabBarView(
                   children: <Widget>[
-                    ListView.separated(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: 50,
-                        itemBuilder: (context, index) =>
-                            CardListTranasctionWidget(
-                                type: 0,
-                                updatedAt: "",
-                                totalPayment: 0,
-                                mediaQueryWidth: mediaQueryWidth),
-                        separatorBuilder: (context, index) => const SizedBox(
-                              height: 10,
-                            )),
-                    ListView.separated(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: 5,
-                        itemBuilder: (context, index) =>
-                            CardListTranasctionWidget(
-                                type: 0,
-                                updatedAt: "",
-                                totalPayment: 0,
-                                mediaQueryWidth: mediaQueryWidth),
-                        separatorBuilder: (context, index) => const SizedBox(
-                              height: 10,
-                            )),
+                    FutureBuilder(
+                        future: conn.getTransasctionByIDUser(
+                            "${jwtData?.id_user}",
+                            status: true),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                              child: LoadingListTransactionsWidget(
+                                  mediaQueryWidth: mediaQueryWidth),
+                            ); // Show loading indicator while fetching data
+                          } else {
+                            if (snapshot.data.data != null) {
+                              return ListView.separated(
+                                  padding: const EdgeInsets.all(20),
+                                  itemCount: snapshot.data!.data.length,
+                                  itemBuilder: (context, index) =>
+                                      CardListTranasctionWidget(
+                                          status:
+                                              snapshot.data!.data[index].status,
+                                          idTransaction: snapshot
+                                              .data!.data[index].id_transaction,
+                                          type: snapshot.data!.data[index].type,
+                                          updatedAt: snapshot
+                                              .data!.data[index].updated_at,
+                                          totalPayment: snapshot
+                                              .data!.data[index].total_payment,
+                                          mediaQueryWidth: mediaQueryWidth),
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(
+                                        height: 10,
+                                      ));
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  children: [
+                                    Lottie.asset(
+                                        'assets/img/lottie/no_transaction.json',
+                                        width: 200),
+                                    Text(
+                                      "Belum Ada Transaksi!",
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }
+                        }),
+                    FutureBuilder(
+                        future: conn.getTransasctionByIDUser(
+                            "${jwtData?.id_user}",
+                            status: false),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                              child: LoadingListTransactionsWidget(
+                                  mediaQueryWidth: mediaQueryWidth),
+                            ); // Show loading indicator while fetching data
+                          } else {
+                            if (snapshot.data.data != null) {
+                              return ListView.separated(
+                                  padding: const EdgeInsets.all(20),
+                                  itemCount: snapshot.data!.data.length,
+                                  itemBuilder: (context, index) =>
+                                      CardListTranasctionWidget(
+                                          status:
+                                              snapshot.data!.data[index].status,
+                                          idTransaction: snapshot
+                                              .data!.data[index].id_transaction,
+                                          type: snapshot.data!.data[index].type,
+                                          updatedAt: snapshot
+                                              .data!.data[index].updated_at,
+                                          totalPayment: snapshot
+                                              .data!.data[index].total_payment,
+                                          mediaQueryWidth: mediaQueryWidth),
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(
+                                        height: 10,
+                                      ));
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  children: [
+                                    Lottie.asset(
+                                        'assets/img/lottie/no_transaction.json',
+                                        width: 200),
+                                    Text(
+                                      "Belum Ada Transaksi!",
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }
+                        }),
                   ],
                 ),
               ),
@@ -405,17 +501,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const CircleAvatar(
-                    backgroundImage: AssetImage("assets/img/logo.png"),
+                  CircleAvatar(
                     radius: 65,
+                    child: SizedBox(
+                      width:
+                          125, // Set the width and height according to your requirement
+                      height: 125,
+                      child: SvgPicture.asset("assets/img/svg/user.svg"),
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  Text('Budi Susanto',
+                  Text('${jwtData?.name}',
                       style: GoogleFonts.poppins(
                           fontSize: 18, fontWeight: FontWeight.w600)),
-                  Text('Bergabung Sejak: 01 Jan 2024',
+                  Text(
+                      'Bergabung Sejak: ${formatDateOnly(jwtData?.created_at)}',
                       style: GoogleFonts.poppins(fontSize: 14)),
                   const SizedBox(
                     height: 25,
