@@ -11,6 +11,7 @@ JWTDecode _$JWTDecodeFromJson(Map<String, dynamic> json) => JWTDecode(
       name: json['name'] as String,
       email: json['email'] as String,
       role: json['role'] as String,
+      created_at: json['created_at'] as String,
     );
 
 Map<String, dynamic> _$JWTDecodeToJson(JWTDecode instance) => <String, dynamic>{
@@ -18,4 +19,5 @@ Map<String, dynamic> _$JWTDecodeToJson(JWTDecode instance) => <String, dynamic>{
       'name': instance.name,
       'email': instance.email,
       'role': instance.role,
+      'created_at': instance.created_at,
     };
