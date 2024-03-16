@@ -205,6 +205,8 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                           itemCount: 5,
                           itemBuilder: (context, index) =>
                               CardListTranasctionWidget(
+                                status: "",
+                                idTransaction: "",
                                 type: 0,
                                 updatedAt: "",
                                 totalPayment: 0,
@@ -241,6 +243,8 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                         itemCount: 50,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
+                              status: "",
+                              idTransaction: "",
                               type: 0,
                               updatedAt: "",
                               totalPayment: 0,
@@ -253,6 +257,8 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                         itemCount: 5,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
+                              status: "",
+                              idTransaction: "",
                               type: 0,
                               updatedAt: "",
                               totalPayment: 0,
