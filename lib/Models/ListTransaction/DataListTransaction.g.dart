@@ -16,6 +16,7 @@ DataListTransaction _$DataListTransactionFromJson(Map<String, dynamic> json) =>
       txn_hash: json['txn_hash'] as String?,
       total_payment: json['total_payment'] as int,
       type: json['type'] as int,
+      status: json['status'] as String,
       updated_at: json['updated_at'] as String,
     );
 
@@ -28,6 +29,7 @@ Map<String, dynamic> _$DataListTransactionToJson(
       'id_hardware': instance.id_hardware,
       'id_outlet': instance.id_outlet,
       'updated_at': instance.updated_at,
+      'status': instance.status,
       'txn_hash': instance.txn_hash,
       'total_payment': instance.total_payment,
       'type': instance.type,
