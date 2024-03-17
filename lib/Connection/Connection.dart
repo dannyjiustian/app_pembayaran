@@ -146,4 +146,23 @@ class Connection {
       return DetailTransaction.fromJson(data);
     }
   }
+
+  Future cancelTransaction(String id_transaction) async {
+    try {
+      Uri uri = Uri.parse("${url}transaction/cancel/$id_transaction");
+      final response = await http.put(uri);
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return DetailTransaction.fromJson(data);
+      } else {
+        return DetailTransaction.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return DetailTransaction.fromJson(data);
+    }
+  }
 }
