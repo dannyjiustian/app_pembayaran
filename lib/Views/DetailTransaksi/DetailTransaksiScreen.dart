@@ -5,6 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 import '../../Connection/Connection.dart';
 import '../../Function/cutString.dart';
@@ -14,6 +16,7 @@ import '../../Function/formatTime.dart';
 import '../../Function/formatToRupiah.dart';
 import '../Widget/ButtonWidget.dart';
 import '../Widget/IconAppbarCostuimeWidget.dart';
+import '../Widget/LoadingDetailTransactionWidget.dart';
 
 class DetailTransaksiScreen extends StatefulWidget {
   const DetailTransaksiScreen({
@@ -59,6 +62,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
         textTheme: GoogleFonts.poppinsTextTheme(
           Theme.of(context).textTheme,
         ),
+        fontFamily: GoogleFonts.poppins().fontFamily,
       ),
       home: Scaffold(
         appBar: appBar,
@@ -88,9 +92,11 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
               child: FutureBuilder(
                   future:
                       conn.getTransasctionByIDTransaction(widget.idTransaction),
-                  builder: (context, snapshot) {
+                  builder: (contextFuture, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator(); // Show loading indicator while fetching data
+                      return LoadingDetailTransactionWidget(
+                          mediaQueryWidth:
+                              mediaQueryWidth); // Show loading indicator while fetching data
                     } else {
                       if (snapshot.data.data != null) {
                         return Column(
@@ -422,7 +428,54 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                               buttonText: "Batalkan Transaksi",
                                               colorSetBody: Colors.blue,
                                               colorSetText: Colors.white,
-                                              functionTap: () async {},
+                                              functionTap: () async {
+                                                QuickAlert.show(
+                                                  context: contextFuture,
+                                                  type: QuickAlertType.confirm,
+                                                  title: "Kamu Yakin?",
+                                                  text:
+                                                      "Transaksi akan dibatalkan",
+                                                  cancelBtnText: 'Tidak',
+                                                  confirmBtnText: 'Iya',
+                                                  customAsset:
+                                                      'assets/img/gif/delete.gif',
+                                                  confirmBtnColor: Colors.red,
+                                                  onConfirmBtnTap: () async {
+                                                    var res = await conn
+                                                        .cancelTransaction(
+                                                            snapshot.data!.data
+                                                                .id_transaction);
+                                                    Navigator.of(contextFuture,
+                                                            rootNavigator: true)
+                                                        .pop();
+                                                    if (mounted &&
+                                                        res!.status) {
+                                                      QuickAlert.show(
+                                                        context: contextFuture,
+                                                        type: QuickAlertType
+                                                            .success,
+                                                        title: "Berhasil",
+                                                        text:
+                                                            "Transaksi Dibatlakan",
+                                                        barrierDismissible:
+                                                            false,
+                                                      ).then((value) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      });
+                                                    } else {
+                                                      QuickAlert.show(
+                                                        context: contextFuture,
+                                                        type: QuickAlertType
+                                                            .error,
+                                                        title: 'Oops...',
+                                                        text:
+                                                            'Terjadi kesalahan, silakan coba lagi!',
+                                                      );
+                                                    }
+                                                  },
+                                                );
+                                              },
                                             ),
                                           ],
                                         ),
