@@ -205,11 +205,12 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                           itemCount: 5,
                           itemBuilder: (context, index) =>
                               CardListTranasctionWidget(
-                                status: "",
-                                idTransaction: "",
-                                type: 0,
-                                updatedAt: "",
-                                totalPayment: 0,
+                                  refreshCallback: () {},
+                                  status: "",
+                                  idTransaction: "",
+                                  type: 0,
+                                  updatedAt: "",
+                                  totalPayment: 0,
                                   mediaQueryWidth: mediaQueryWidth),
                           separatorBuilder: (context, index) => const SizedBox(
                                 height: 10,
@@ -243,11 +244,12 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                         itemCount: 50,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
-                              status: "",
-                              idTransaction: "",
-                              type: 0,
-                              updatedAt: "",
-                              totalPayment: 0,
+                                refreshCallback: () {},
+                                status: "",
+                                idTransaction: "",
+                                type: 0,
+                                updatedAt: "",
+                                totalPayment: 0,
                                 mediaQueryWidth: mediaQueryWidth),
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
@@ -257,11 +259,12 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                         itemCount: 5,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
-                              status: "",
-                              idTransaction: "",
-                              type: 0,
-                              updatedAt: "",
-                              totalPayment: 0,
+                                refreshCallback: () {},
+                                status: "",
+                                idTransaction: "",
+                                type: 0,
+                                updatedAt: "",
+                                totalPayment: 0,
                                 mediaQueryWidth: mediaQueryWidth),
                         separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
