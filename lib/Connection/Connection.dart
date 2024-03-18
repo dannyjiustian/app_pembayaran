@@ -128,9 +128,12 @@ class Connection {
     }
   }
 
-  Future getTransasctionByIDTransaction(String id_transaction) async {
+  Future getTransasctionByIDTransaction(String id_transaction,
+      {bool? status}) async {
     try {
-      Uri uri = Uri.parse("${url}transaction/$id_transaction");
+      String urlQuery = "${url}transaction/$id_transaction";
+      if (status != null) urlQuery += "?status=$status";
+      Uri uri = Uri.parse(urlQuery);
       final response = await http.get(uri);
       Map<String, dynamic> data =
           (json.decode(response.body) as Map<String, dynamic>);
