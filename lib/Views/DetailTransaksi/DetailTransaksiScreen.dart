@@ -459,7 +459,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                             .success,
                                                         title: "Berhasil",
                                                         text:
-                                                            "Transaksi Dibatlakan",
+                                                            "Transaksi Dibatalkan",
                                                         barrierDismissible:
                                                             false,
                                                       ).then((value) {
