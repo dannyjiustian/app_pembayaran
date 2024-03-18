@@ -245,6 +245,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                           itemCount: 5,
                           itemBuilder: (context, index) =>
                               CardListTranasctionWidget(
+                                  refreshCallback: () {},
                                   status: "",
                                   idTransaction: "",
                                   type: 0,
@@ -283,6 +284,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                         itemCount: 50,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
+                                refreshCallback: () {},
                                 status: "",
                                 idTransaction: "",
                                 type: 0,
@@ -297,6 +299,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet> {
                         itemCount: 5,
                         itemBuilder: (context, index) =>
                             CardListTranasctionWidget(
+                                refreshCallback: () {},
                                 status: "",
                                 idTransaction: "",
                                 type: 0,
