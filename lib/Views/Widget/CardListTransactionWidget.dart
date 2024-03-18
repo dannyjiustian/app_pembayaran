@@ -15,13 +15,13 @@ class CardListTranasctionWidget extends StatelessWidget {
     required this.updatedAt,
     required this.idTransaction,
     required this.status,
-    required this.refreshCallback,
+    this.refreshCallback,
   });
 
   final double mediaQueryWidth;
   final int type, totalPayment;
   final String updatedAt, idTransaction, status;
-  final VoidCallback refreshCallback;
+  final VoidCallback? refreshCallback;
 
   @override
   Widget build(BuildContext context) {
