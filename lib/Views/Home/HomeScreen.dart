@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Connection/Connection.dart';
 import '../../Function/formatDateOnly.dart';
 import '../../Models/JWT/JWTDecode.dart';
+import '../../Models/ListCard/ListCard.dart';
+import '../../Models/ListTransaction/ListTransaction.dart';
 import '../Card/DetectCardScreen.dart';
 import '../Widget/ButtonWidget.dart';
 import '../Widget/CardBannerWidget.dart';
@@ -30,15 +32,56 @@ class HomeScreen extends StatefulWidget {
 JWTDecode? jwtData;
 String? accessToken;
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   Connection conn = Connection();
-  int _selectedIndex = 0;
+  int _selectedIndexBottomNav = 0, _selectedIndexTab = 0;
   PageController _pageController = PageController(initialPage: 0);
+  Future<ListCard>? _futureDataCard;
+  Future<ListTransaction>? _futureDataLastTransaction,
+      _futureDataTransactionFinish,
+      _futureDataTransactionOnProcess;
+  late TabController _tabController;
 
   Future checkLocalStorage() async {
     final pref = await SharedPreferences.getInstance();
-
     accessToken = pref.getString('accessToken');
+  }
+
+  Future<ListCard> fetchDataCard() async {
+    return await conn.getCardByID("${jwtData?.id_user}");
+  }
+
+  Future<ListTransaction> fetchDataLastTransaction() async {
+    return await conn.getTransasctionByIDUser("${jwtData?.id_user}",
+        status: true, take: 5);
+  }
+
+  Future<ListTransaction> fetchDataTransactionFinish() async {
+    return await conn.getTransasctionByIDUser("${jwtData?.id_user}",
+        status: true);
+  }
+
+  Future<ListTransaction> fetchDataTransactionOnProcess() async {
+    return await conn.getTransasctionByIDUser("${jwtData?.id_user}",
+        status: false);
+  }
+
+  Future refresh(BuildContext context) async {
+    setState(() {});
+  }
+
+  Future<void> refreshData() async {
+    setState(() {
+      if (_selectedIndexBottomNav == 0) {
+        _futureDataCard = fetchDataCard();
+        _futureDataLastTransaction = fetchDataLastTransaction();
+      } else if (_selectedIndexBottomNav == 1 && _selectedIndexTab == 0) {
+        _futureDataTransactionFinish = fetchDataTransactionFinish();
+      } else if (_selectedIndexBottomNav == 1 && _selectedIndexTab == 1) {
+        _futureDataTransactionOnProcess = fetchDataTransactionOnProcess();
+      }
+    });
   }
 
   @override
@@ -49,6 +92,14 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         jwtData =
             JWTDecode.fromJson(JWT.decode(accessToken.toString()).payload);
+      });
+      _futureDataCard = fetchDataCard();
+      _futureDataLastTransaction = fetchDataLastTransaction();
+    });
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _selectedIndexTab = _tabController.index;
       });
     });
   }
@@ -92,484 +143,558 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _pageController,
           onPageChanged: (index) {
             setState(() {
-              _selectedIndex = index;
+              _selectedIndexBottomNav = index;
             });
           },
           children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: bodyHeight * 0.13,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+            _selectedIndexBottomNav == 0
+                ? RefreshIndicator(
+                    onRefresh: refreshData,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
                         children: [
-                          CircleAvatar(
-                            child: SizedBox(
-                              width:
-                                  48, // Set the width and height according to your requirement
-                              height: 48,
-                              child:
-                                  SvgPicture.asset("assets/img/svg/user.svg"),
+                          SizedBox(
+                            height: bodyHeight * 0.13,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    child: SizedBox(
+                                      width:
+                                          48, // Set the width and height according to your requirement
+                                      height: 48,
+                                      child: SvgPicture.asset(
+                                          "assets/img/svg/user.svg"),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Hi, ${jwtData?.name} 👋",
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      Text(
+                                        "Selamat datang kembali!",
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Hi, ${jwtData?.name} 👋",
-                                style: GoogleFonts.poppins(
-                                    fontSize: 18, fontWeight: FontWeight.w600),
-                              ),
-                              Text(
-                                "Selamat datang kembali!",
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14, color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  FutureBuilder(
-                      future: conn.getCardByID("${jwtData?.id_user}"),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return LoadingCardRFIDVirtualWidget(
-                            mediaQueryWidth: mediaQueryWidth,
-                          ); // Show loading indicator while fetching data
-                        } else {
-                          if (snapshot.data.data != null) {
-                            return SizedBox(
-                              height: 230,
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                                child: Swiper(
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return CardRFIDVirtualWidget(
-                                      idCard:
-                                          snapshot.data!.data[index].id_card,
-                                      saldo: snapshot.data!.data[index].balance,
-                                      walletAddress: snapshot
-                                          .data!.data[index].wallet_address,
-                                      mediaQueryWidth: mediaQueryWidth,
+                          FutureBuilder(
+                              future: _futureDataCard,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return LoadingCardRFIDVirtualWidget(
+                                    mediaQueryWidth: mediaQueryWidth,
+                                  );
+                                } else {
+                                  if (snapshot.data!.status) {
+                                    return SizedBox(
+                                      height: 230,
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 0, 10),
+                                        child: Swiper(
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return CardRFIDVirtualWidget(
+                                              idCard: snapshot
+                                                  .data!.data![index].id_card,
+                                              saldo: snapshot
+                                                  .data!.data![index].balance,
+                                              walletAddress: snapshot.data!
+                                                  .data![index].wallet_address,
+                                              mediaQueryWidth: mediaQueryWidth,
+                                            );
+                                          },
+                                          itemCount:
+                                              snapshot.data!.data!.length,
+                                          itemWidth: mediaQueryWidth - 40,
+                                          itemHeight: 180,
+                                          layout: SwiperLayout.STACK,
+                                          scrollDirection: Axis.vertical,
+                                          axisDirection: AxisDirection.down,
+                                          loop: snapshot.data!.data!.length > 1
+                                              ? true
+                                              : false,
+                                        ),
+                                      ),
                                     );
-                                  },
-                                  itemCount: snapshot.data!.data.length,
-                                  itemWidth: mediaQueryWidth - 40,
-                                  itemHeight: 180,
-                                  layout: SwiperLayout.STACK,
-                                  scrollDirection: Axis.vertical,
-                                  axisDirection: AxisDirection.down,
-                                  loop: snapshot.data!.data.length > 1
-                                      ? true
-                                      : false,
-                                ),
+                                  } else {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 20),
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetectCardScreen()));
+                                        },
+                                        child: DottedBorder(
+                                          borderType: BorderType.RRect,
+                                          radius: const Radius.circular(10),
+                                          strokeWidth: 2,
+                                          dashPattern: const [6, 3, 6, 3],
+                                          color: Colors.grey.shade500,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(12)),
+                                            child: Container(
+                                              height: 130,
+                                              width: mediaQueryWidth - 50,
+                                              color: Colors.blue.shade50,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  const Icon(
+                                                    Iconsax.cards,
+                                                    size: 50,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Text(
+                                                    "Daftar Kartu",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.black),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: mediaQueryWidth / 2 - 30,
+                                    child: ButtonWidget(
+                                        buttonText: "Top Up",
+                                        colorSetBody: Colors.blue.shade100,
+                                        colorSetText: Colors.black,
+                                        functionTap: () async {
+                                          // var res =
+                                          //     await conn.getTransasctionByIDUser(
+                                          //         "${jwtData?.id_user}",
+                                          //         offset: 1);
+                                          // print(res);
+                                          // print(jwtData!.id_user);
+                                          // Navigator.of(context).push(
+                                          //     MaterialPageRoute(
+                                          //         builder: (context) =>
+                                          //             DetectCardScreen()))
+                                        }),
+                                  ),
+                                  SizedBox(
+                                    width: mediaQueryWidth / 2 - 30,
+                                    child: ButtonWidget(
+                                        buttonText: "Daftar Kartu",
+                                        colorSetBody: Colors.blue.shade100,
+                                        colorSetText: Colors.black,
+                                        functionTap: () => {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetectCardScreen()))
+                                            }),
+                                  ),
+                                ],
                               ),
-                            );
-                          } else {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          DetectCardScreen()));
+                            ),
+                          ),
+                          SizedBox(
+                            height: 130,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
+                              child: Swiper(
+                                itemBuilder: (BuildContext context, int index) {
+                                  return const CardBannerWidget();
                                 },
-                                child: DottedBorder(
-                                  borderType: BorderType.RRect,
-                                  radius: const Radius.circular(10),
-                                  strokeWidth: 2,
-                                  dashPattern: const [6, 3, 6, 3],
-                                  color: Colors.grey.shade500,
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(12)),
-                                    child: Container(
-                                      height: 130,
-                                      width: mediaQueryWidth - 50,
-                                      color: Colors.blue.shade50,
+                                itemCount: 3,
+                                viewportFraction: 0.9,
+                                scale: 0.98,
+                                autoplay: true,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                              child: Text(
+                                "Transaksi Terakhir",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black),
+                              ),
+                            ),
+                          ),
+                          FutureBuilder(
+                              future: _futureDataLastTransaction,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                                    child: LoadingListTransactionsWidget(
+                                        mediaQueryWidth: mediaQueryWidth),
+                                  );
+                                } else {
+                                  if (snapshot.data!.status) {
+                                    return Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            20, 10, 20, 20),
+                                        child: ListView.separated(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemCount:
+                                                snapshot.data!.data!.length,
+                                            itemBuilder: (context, index) =>
+                                                CardListTranasctionWidget(
+                                                    status: snapshot.data!
+                                                        .data![index].status,
+                                                    idTransaction: snapshot
+                                                        .data!
+                                                        .data![index]
+                                                        .id_transaction,
+                                                    type: snapshot.data!
+                                                        .data![index].type,
+                                                    updatedAt: snapshot
+                                                        .data!
+                                                        .data![index]
+                                                        .updated_at,
+                                                    totalPayment: snapshot
+                                                        .data!
+                                                        .data![index]
+                                                        .total_payment,
+                                                    mediaQueryWidth:
+                                                        mediaQueryWidth),
+                                            separatorBuilder:
+                                                (context, index) =>
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    )));
+                                  } else {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(20),
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
                                         children: [
-                                          const Icon(
-                                            Iconsax.cards,
-                                            size: 50,
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
+                                          Lottie.asset(
+                                              'assets/img/lottie/no_transaction.json',
+                                              width: 200),
                                           Text(
-                                            "Daftar Kartu",
+                                            "Belum Ada Transaksi!",
                                             style: GoogleFonts.poppins(
-                                                fontSize: 14,
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.w600,
                                                 color: Colors.black),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                        }
-                      }),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: mediaQueryWidth / 2 - 30,
-                            child: ButtonWidget(
-                                buttonText: "Top Up",
-                                colorSetBody: Colors.blue.shade100,
-                                colorSetText: Colors.black,
-                                functionTap: () async {
-                                  // var res =
-                                  //     await conn.getTransasctionByIDUser(
-                                  //         "${jwtData?.id_user}",
-                                  //         offset: 1);
-                                  // print(res);
-                                  // print(jwtData!.id_user);
-                                  // Navigator.of(context).push(
-                                  //     MaterialPageRoute(
-                                  //         builder: (context) =>
-                                  //             DetectCardScreen()))
-                                }),
-                          ),
-                          SizedBox(
-                            width: mediaQueryWidth / 2 - 30,
-                            child: ButtonWidget(
-                                buttonText: "Daftar Kartu",
-                                colorSetBody: Colors.blue.shade100,
-                                colorSetText: Colors.black,
-                                functionTap: () => {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetectCardScreen()))
-                                    }),
-                          ),
+                                    );
+                                  }
+                                }
+                              }),
                         ],
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 130,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
-                      child: Swiper(
-                        itemBuilder: (BuildContext context, int index) {
-                          return const CardBannerWidget();
-                        },
-                        itemCount: 3,
-                        viewportFraction: 0.9,
-                        scale: 0.98,
-                        autoplay: true,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                      child: Text(
-                        "Transaksi Terakhir",
-                        style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black),
-                      ),
-                    ),
-                  ),
-                  FutureBuilder(
-                      future: conn.getTransasctionByIDUser(
-                          "${jwtData?.id_user}",
-                          status: true,
-                          take: 5),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-                            child: LoadingListTransactionsWidget(
-                                mediaQueryWidth: mediaQueryWidth),
-                          ); // Show loading indicator while fetching data
-                        } else {
-                          if (snapshot.data.data != null) {
-                            return Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                                child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: snapshot.data!.data.length,
-                                    itemBuilder: (context, index) =>
-                                        CardListTranasctionWidget(
-                                            status: snapshot
-                                                .data!.data[index].status,
-                                            idTransaction: snapshot.data!
-                                                .data[index].id_transaction,
-                                            type:
-                                                snapshot.data!.data[index].type,
-                                            updatedAt: snapshot
-                                                .data!.data[index].updated_at,
-                                            totalPayment: snapshot.data!
-                                                .data[index].total_payment,
-                                            mediaQueryWidth: mediaQueryWidth),
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                          height: 10,
-                                        )));
-                          } else {
-                            return Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                children: [
-                                  Lottie.asset(
-                                      'assets/img/lottie/no_transaction.json',
-                                      width: 200),
-                                  Text(
-                                    "Belum Ada Transaksi!",
-                                    style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black),
-                                  ),
-                                ],
+                  )
+                : _selectedIndexBottomNav == 1
+                    ? DefaultTabController(
+                        initialIndex: 0,
+                        length: 2,
+                        child: Scaffold(
+                          appBar: TabBar(
+                              controller: _tabController,
+                              labelColor: Colors.blue.shade500,
+                              unselectedLabelColor: Colors.grey.shade500,
+                              tabs: [
+                                Tab(
+                                    child: Text(
+                                  'Selesai',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                )),
+                                Tab(
+                                    child: Text('On Proses',
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600))),
+                              ]),
+                          body: TabBarView(
+                            controller: _tabController,
+                            children: [
+                              RefreshIndicator(
+                                onRefresh: refreshData,
+                                child: FutureBuilder(
+                                    future: _futureDataTransactionFinish,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 10, 0, 20),
+                                          child: LoadingListTransactionsWidget(
+                                              mediaQueryWidth: mediaQueryWidth),
+                                        );
+                                      } else {
+                                        if (snapshot.data!.status) {
+                                          return ListView.separated(
+                                              padding: const EdgeInsets.all(20),
+                                              itemCount:
+                                                  snapshot.data!.data!.length,
+                                              itemBuilder: (context, index) =>
+                                                  CardListTranasctionWidget(
+                                                      status: snapshot.data!
+                                                          .data![index].status,
+                                                      idTransaction: snapshot
+                                                          .data!
+                                                          .data![index]
+                                                          .id_transaction,
+                                                      type: snapshot.data!
+                                                          .data![index].type,
+                                                      updatedAt: snapshot
+                                                          .data!
+                                                          .data![index]
+                                                          .updated_at,
+                                                      totalPayment: snapshot
+                                                          .data!
+                                                          .data![index]
+                                                          .total_payment,
+                                                      mediaQueryWidth:
+                                                          mediaQueryWidth),
+                                              separatorBuilder:
+                                                  (context, index) =>
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ));
+                                        } else {
+                                          return Padding(
+                                            padding: const EdgeInsets.all(20),
+                                            child: Center(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Lottie.asset(
+                                                      'assets/img/lottie/no_transaction.json',
+                                                      width: 200),
+                                                  Text(
+                                                    "Belum Ada Transaksi!",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.black),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    }),
                               ),
-                            );
-                          }
-                        }
-                      }),
-                ],
-              ),
-            ),
-            DefaultTabController(
-              initialIndex: 0,
-              length: 2,
-              child: Scaffold(
-                appBar: TabBar(
-                    labelColor: Colors.blue.shade500,
-                    unselectedLabelColor: Colors.grey.shade500,
-                    tabs: [
-                      Tab(
-                          child: Text(
-                        'Selesai',
-                        style: GoogleFonts.poppins(
-                            fontSize: 14, fontWeight: FontWeight.w600),
-                      )),
-                      Tab(
-                          child: Text('On Proses',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, fontWeight: FontWeight.w600))),
-                    ]),
-                body: TabBarView(
-                  children: <Widget>[
-                    FutureBuilder(
-                        future: conn.getTransasctionByIDUser(
-                            "${jwtData?.id_user}",
-                            status: true),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-                              child: LoadingListTransactionsWidget(
-                                  mediaQueryWidth: mediaQueryWidth),
-                            ); // Show loading indicator while fetching data
-                          } else {
-                            if (snapshot.data.data != null) {
-                              return ListView.separated(
-                                  padding: const EdgeInsets.all(20),
-                                  itemCount: snapshot.data!.data.length,
-                                  itemBuilder: (context, index) =>
-                                      CardListTranasctionWidget(
-                                          status:
-                                              snapshot.data!.data[index].status,
-                                          idTransaction: snapshot
-                                              .data!.data[index].id_transaction,
-                                          type: snapshot.data!.data[index].type,
-                                          updatedAt: snapshot
-                                              .data!.data[index].updated_at,
-                                          totalPayment: snapshot
-                                              .data!.data[index].total_payment,
-                                          mediaQueryWidth: mediaQueryWidth),
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(
-                                        height: 10,
-                                      ));
-                            } else {
-                              return Padding(
-                                padding: const EdgeInsets.all(20),
+                              RefreshIndicator(
+                                onRefresh: refreshData,
+                                child: FutureBuilder(
+                                    future: _futureDataTransactionOnProcess,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 10, 0, 20),
+                                          child: LoadingListTransactionsWidget(
+                                              mediaQueryWidth: mediaQueryWidth),
+                                        );
+                                      } else {
+                                        if (snapshot.data!.status &&
+                                            snapshot.hasData) {
+                                          return ListView.separated(
+                                              padding: const EdgeInsets.all(20),
+                                              itemCount:
+                                                  snapshot.data!.data!.length,
+                                              itemBuilder: (context, index) =>
+                                                  CardListTranasctionWidget(
+                                                      status: snapshot.data!
+                                                          .data![index].status,
+                                                      idTransaction: snapshot
+                                                          .data!
+                                                          .data![index]
+                                                          .id_transaction,
+                                                      type: snapshot.data!
+                                                          .data![index].type,
+                                                      updatedAt: snapshot
+                                                          .data!
+                                                          .data![index]
+                                                          .updated_at,
+                                                      totalPayment: snapshot
+                                                          .data!
+                                                          .data![index]
+                                                          .total_payment,
+                                                      mediaQueryWidth:
+                                                          mediaQueryWidth),
+                                              separatorBuilder:
+                                                  (context, index) =>
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ));
+                                        } else {
+                                          return Padding(
+                                            padding: const EdgeInsets.all(20),
+                                            child: ListView(
+                                              children: [
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Lottie.asset(
+                                                        'assets/img/lottie/no_transaction.json',
+                                                        width: 200),
+                                                    Text(
+                                                      "Belum Ada Transaksi!",
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color:
+                                                                  Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    }),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 80, 20, 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 65,
+                              child: SizedBox(
+                                width:
+                                    125, // Set the width and height according to your requirement
+                                height: 125,
+                                child:
+                                    SvgPicture.asset("assets/img/svg/user.svg"),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text('${jwtData?.name}',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 18, fontWeight: FontWeight.w600)),
+                            Text(
+                                'Bergabung Sejak: ${formatDateOnly(jwtData?.created_at)}',
+                                style: GoogleFonts.poppins(fontSize: 14)),
+                            const SizedBox(
+                              height: 25,
+                            ),
+                            ButtonWidget(
+                                buttonText: "Perbaharui Profile",
+                                colorSetBody: Colors.blue.shade100,
+                                colorSetText: Colors.black,
+                                functionTap: () => {}),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            ButtonWidget(
+                                buttonText: "Bantuan",
+                                colorSetBody: Colors.blue.shade100,
+                                colorSetText: Colors.black,
+                                functionTap: () => {}),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            ButtonWidget(
+                                buttonText: "Syarat & Ketentuan",
+                                colorSetBody: Colors.blue.shade100,
+                                colorSetText: Colors.black,
+                                functionTap: () => {}),
+                            Expanded(
                                 child: Column(
-                                  children: [
-                                    Lottie.asset(
-                                        'assets/img/lottie/no_transaction.json',
-                                        width: 200),
-                                    Text(
-                                      "Belum Ada Transaksi!",
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          }
-                        }),
-                    FutureBuilder(
-                        future: conn.getTransasctionByIDUser(
-                            "${jwtData?.id_user}",
-                            status: false),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-                              child: LoadingListTransactionsWidget(
-                                  mediaQueryWidth: mediaQueryWidth),
-                            ); // Show loading indicator while fetching data
-                          } else {
-                            if (snapshot.data.data != null) {
-                              return ListView.separated(
-                                  padding: const EdgeInsets.all(20),
-                                  itemCount: snapshot.data!.data.length,
-                                  itemBuilder: (context, index) =>
-                                      CardListTranasctionWidget(
-                                          status:
-                                              snapshot.data!.data[index].status,
-                                          idTransaction: snapshot
-                                              .data!.data[index].id_transaction,
-                                          type: snapshot.data!.data[index].type,
-                                          updatedAt: snapshot
-                                              .data!.data[index].updated_at,
-                                          totalPayment: snapshot
-                                              .data!.data[index].total_payment,
-                                          mediaQueryWidth: mediaQueryWidth),
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(
-                                        height: 10,
-                                      ));
-                            } else {
-                              return Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Column(
-                                  children: [
-                                    Lottie.asset(
-                                        'assets/img/lottie/no_transaction.json',
-                                        width: 200),
-                                    Text(
-                                      "Belum Ada Transaksi!",
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          }
-                        }),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 80, 20, 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 65,
-                    child: SizedBox(
-                      width:
-                          125, // Set the width and height according to your requirement
-                      height: 125,
-                      child: SvgPicture.asset("assets/img/svg/user.svg"),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text('${jwtData?.name}',
-                      style: GoogleFonts.poppins(
-                          fontSize: 18, fontWeight: FontWeight.w600)),
-                  Text(
-                      'Bergabung Sejak: ${formatDateOnly(jwtData?.created_at)}',
-                      style: GoogleFonts.poppins(fontSize: 14)),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  ButtonWidget(
-                      buttonText: "Perbaharui Profile",
-                      colorSetBody: Colors.blue.shade100,
-                      colorSetText: Colors.black,
-                      functionTap: () => {}),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ButtonWidget(
-                      buttonText: "Bantuan",
-                      colorSetBody: Colors.blue.shade100,
-                      colorSetText: Colors.black,
-                      functionTap: () => {}),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ButtonWidget(
-                      buttonText: "Syarat & Ketentuan",
-                      colorSetBody: Colors.blue.shade100,
-                      colorSetText: Colors.black,
-                      functionTap: () => {}),
-                  Expanded(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ButtonWidget(
-                          buttonText: "Keluar",
-                          colorSetBody: Colors.red.shade100,
-                          colorSetText: Colors.black,
-                          functionTap: () => {}),
-                    ],
-                  ))
-                ],
-              ),
-            )
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ButtonWidget(
+                                    buttonText: "Keluar",
+                                    colorSetBody: Colors.red.shade100,
+                                    colorSetText: Colors.black,
+                                    functionTap: () => {}),
+                              ],
+                            ))
+                          ],
+                        ),
+                      )
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
+          currentIndex: _selectedIndexBottomNav,
           onTap: (index) {
             setState(() {
-              _selectedIndex = index;
+              _selectedIndexBottomNav = index;
               _pageController.animateToPage(
                 index,
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.ease,
               );
             });
+            if (_selectedIndexBottomNav == 1 &&
+                _selectedIndexTab == 0 &&
+                _futureDataTransactionFinish == null &&
+                _futureDataTransactionOnProcess == null) {
+              _futureDataTransactionFinish = fetchDataTransactionFinish();
+              _futureDataTransactionOnProcess = fetchDataTransactionOnProcess();
+            }
           },
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
