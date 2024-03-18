@@ -507,24 +507,29 @@ class _HomeScreenState extends State<HomeScreen>
                                         } else {
                                           return Padding(
                                             padding: const EdgeInsets.all(20),
-                                            child: Center(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Lottie.asset(
-                                                      'assets/img/lottie/no_transaction.json',
-                                                      width: 200),
-                                                  Text(
-                                                    "Belum Ada Transaksi!",
-                                                    style: GoogleFonts.poppins(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: Colors.black),
-                                                  ),
-                                                ],
-                                              ),
+                                            child: ListView(
+                                              children: [
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Lottie.asset(
+                                                        'assets/img/lottie/no_transaction.json',
+                                                        width: 200),
+                                                    Text(
+                                                      "Belum Ada Transaksi!",
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color:
+                                                                  Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
                                           );
                                         }
