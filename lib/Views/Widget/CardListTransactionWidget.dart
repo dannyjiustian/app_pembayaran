@@ -15,18 +15,20 @@ class CardListTranasctionWidget extends StatelessWidget {
     required this.updatedAt,
     required this.idTransaction,
     required this.status,
+    required this.refreshCallback,
   });
 
   final double mediaQueryWidth;
   final int type, totalPayment;
   final String updatedAt, idTransaction, status;
+  final VoidCallback refreshCallback;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => DetailTransaksiScreen(idTransaction: idTransaction, status: status,)));
+            MaterialPageRoute(builder: (context) => DetailTransaksiScreen(idTransaction: idTransaction, status: status, refreshCallback: refreshCallback)));
       },
       child: Container(
         width: mediaQueryWidth,
