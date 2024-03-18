@@ -6,8 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../Function/formatDateOnly.dart';
 import '../../Function/formatToRupiah.dart';
 
-class CardListTranasctionWidget extends StatelessWidget {
-  const CardListTranasctionWidget({
+class CardListTransactionWidget extends StatelessWidget {
+  const CardListTransactionWidget({
     super.key,
     required this.mediaQueryWidth,
     required this.type,
