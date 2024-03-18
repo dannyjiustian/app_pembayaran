@@ -2,7 +2,7 @@ String formatDateOnly(String? dateString) {
   if (dateString == null) {
     dateString = "2024-01-01T12:49:37.517Z";
   }
-  DateTime date = DateTime.parse(dateString);
+  DateTime date = DateTime.parse(dateString).toLocal();
 
   final List<String> indonesianMonths = [
     'Jan',
