@@ -24,11 +24,11 @@ class DetailTransaksiScreen extends StatefulWidget {
     super.key,
     required this.idTransaction,
     required this.status,
-    required this.refreshCallback
+    this.refreshCallback
   });
 
   final String idTransaction, status;
-  final VoidCallback refreshCallback;
+  final VoidCallback? refreshCallback;
 
   @override
   State<DetailTransaksiScreen> createState() => _DetailTransaksiScreenState();
@@ -465,7 +465,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                         barrierDismissible:
                                                             false,
                                                       ).then((value) {
-                                                        widget.refreshCallback();
+                                                        widget.refreshCallback!();
                                                         Navigator.of(context)
                                                             .pop();
                                                       });
