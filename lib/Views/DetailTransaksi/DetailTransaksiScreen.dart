@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:lottie/lottie.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 
@@ -22,9 +23,10 @@ class DetailTransaksiScreen extends StatefulWidget {
   const DetailTransaksiScreen({
     super.key,
     required this.idTransaction,
+    required this.status,
   });
 
-  final String idTransaction;
+  final String idTransaction, status;
 
   @override
   State<DetailTransaksiScreen> createState() => _DetailTransaksiScreenState();
@@ -90,8 +92,9 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
             ),
             Expanded(
               child: FutureBuilder(
-                  future:
-                      conn.getTransasctionByIDTransaction(widget.idTransaction),
+                  future: conn.getTransasctionByIDTransaction(
+                      widget.idTransaction,
+                      status: widget.status == "On Proses" ? false : true),
                   builder: (contextFuture, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return LoadingDetailTransactionWidget(
@@ -484,7 +487,28 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                           ],
                         );
                       } else {
-                        return const Text("null");
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                                'assets/img/lottie/no_transaction.json',
+                                width: 200),
+                            Text(
+                              "Transaksi Tidak Ditemukan!",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black),
+                            ),
+                            Text(
+                              "Silakan Muat Ulang Halaman",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        );
                       }
                     }
                   }),
