@@ -204,7 +204,7 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: 5,
                           itemBuilder: (context, index) =>
-                              CardListTranasctionWidget(
+                              CardListTransactionWidget(
                                   status: "",
                                   idTransaction: "",
                                   type: 0,
@@ -242,7 +242,7 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                         padding: const EdgeInsets.all(20),
                         itemCount: 50,
                         itemBuilder: (context, index) =>
-                            CardListTranasctionWidget(
+                            CardListTransactionWidget(
                                 status: "",
                                 idTransaction: "",
                                 type: 0,
@@ -256,7 +256,7 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                         padding: const EdgeInsets.all(20),
                         itemCount: 5,
                         itemBuilder: (context, index) =>
-                            CardListTranasctionWidget(
+                            CardListTransactionWidget(
                                 status: "",
                                 idTransaction: "",
                                 type: 0,
