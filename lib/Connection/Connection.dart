@@ -70,7 +70,6 @@ class Connection {
       if (response.statusCode == 200) {
         return Login.fromJson(data);
       } else {
-        print(data);
         return Login.fromJson(data);
       }
     } catch (e) {
