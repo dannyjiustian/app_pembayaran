@@ -67,10 +67,6 @@ class _HomeScreenState extends State<HomeScreen>
         status: false);
   }
 
-  Future refresh(BuildContext context) async {
-    setState(() {});
-  }
-
   Future<void> refreshData() async {
     setState(() {
       if (_selectedIndexBottomNav == 0) {
@@ -386,6 +382,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 snapshot.data!.data!.length,
                                             itemBuilder: (context, index) =>
                                                 CardListTranasctionWidget(
+                                                  refreshCallback: refreshData,
                                                     status: snapshot.data!
                                                         .data![index].status,
                                                     idTransaction: snapshot
@@ -481,6 +478,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                   snapshot.data!.data!.length,
                                               itemBuilder: (context, index) =>
                                                   CardListTranasctionWidget(
+                                                    refreshCallback: refreshData,
                                                       status: snapshot.data!
                                                           .data![index].status,
                                                       idTransaction: snapshot
@@ -558,6 +556,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                   snapshot.data!.data!.length,
                                               itemBuilder: (context, index) =>
                                                   CardListTranasctionWidget(
+                                                    refreshCallback: refreshData,
                                                       status: snapshot.data!
                                                           .data![index].status,
                                                       idTransaction: snapshot
