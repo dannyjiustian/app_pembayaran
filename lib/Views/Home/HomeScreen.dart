@@ -80,6 +80,14 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  Future<void> refreshDataAfterCancel() async {
+    setState(() {
+      _futureDataLastTransaction = fetchDataLastTransaction();
+      _futureDataTransactionFinish = fetchDataTransactionFinish();
+      _futureDataTransactionOnProcess = fetchDataTransactionOnProcess();
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -382,7 +390,6 @@ class _HomeScreenState extends State<HomeScreen>
                                                 snapshot.data!.data!.length,
                                             itemBuilder: (context, index) =>
                                                 CardListTranasctionWidget(
-                                                  refreshCallback: refreshData,
                                                     status: snapshot.data!
                                                         .data![index].status,
                                                     idTransaction: snapshot
@@ -478,7 +485,6 @@ class _HomeScreenState extends State<HomeScreen>
                                                   snapshot.data!.data!.length,
                                               itemBuilder: (context, index) =>
                                                   CardListTranasctionWidget(
-                                                    refreshCallback: refreshData,
                                                       status: snapshot.data!
                                                           .data![index].status,
                                                       idTransaction: snapshot
@@ -552,11 +558,12 @@ class _HomeScreenState extends State<HomeScreen>
                                             snapshot.hasData) {
                                           return ListView.separated(
                                               padding: const EdgeInsets.all(20),
-                                              itemCount:
-                                                  snapshot.data!.data!.length,
+                                              itemCount: snapshot
+                                                  .data!.data!.length,
                                               itemBuilder: (context, index) =>
                                                   CardListTranasctionWidget(
-                                                    refreshCallback: refreshData,
+                                                      refreshCallback:
+                                                          refreshDataAfterCancel,
                                                       status: snapshot.data!
                                                           .data![index].status,
                                                       idTransaction: snapshot
