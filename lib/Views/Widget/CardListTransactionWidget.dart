@@ -26,7 +26,7 @@ class CardListTranasctionWidget extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => DetailTransaksiScreen(idTransaction: idTransaction,)));
+            MaterialPageRoute(builder: (context) => DetailTransaksiScreen(idTransaction: idTransaction, status: status,)));
       },
       child: Container(
         width: mediaQueryWidth,
