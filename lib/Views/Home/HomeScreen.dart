@@ -389,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen>
                                             itemCount:
                                                 snapshot.data!.data!.length,
                                             itemBuilder: (context, index) =>
-                                                CardListTranasctionWidget(
+                                                CardListTransactionWidget(
                                                     status: snapshot.data!
                                                         .data![index].status,
                                                     idTransaction: snapshot
@@ -484,7 +484,7 @@ class _HomeScreenState extends State<HomeScreen>
                                               itemCount:
                                                   snapshot.data!.data!.length,
                                               itemBuilder: (context, index) =>
-                                                  CardListTranasctionWidget(
+                                                  CardListTransactionWidget(
                                                       status: snapshot.data!
                                                           .data![index].status,
                                                       idTransaction: snapshot
@@ -561,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen>
                                               itemCount: snapshot
                                                   .data!.data!.length,
                                               itemBuilder: (context, index) =>
-                                                  CardListTranasctionWidget(
+                                                  CardListTransactionWidget(
                                                       refreshCallback:
                                                           refreshDataAfterCancel,
                                                       status: snapshot.data!
