@@ -33,16 +33,24 @@ class Connection {
       Map<String, dynamic> data =
           (json.decode(response.body) as Map<String, dynamic>);
       if (response.statusCode == 200) {
-        print(data);
         TokenJWT tokenJWT = TokenJWT.fromJson(data);
         final pref = await SharedPreferences.getInstance();
-        // pref.setString("accessToken", tokenJWT.data!.accessToken);
+        pref.setString("accessToken", tokenJWT.data!.accessToken);
         pref.setString("refreshToken", tokenJWT.data!.refreshToken);
+        print(tokenJWT.data!.accessToken);
+        return tokenJWT.data!.accessToken;
       } else {
-        print(data);
+        throw Exception("1");
       }
     } catch (e) {
-      print(e);
+      if (e.toString() == "Exception: 1") {
+        throw Exception('Failed to refresh token');
+      } else {
+        Map<String, dynamic> data =
+            (json.decode('{"status": false, "message": "${e.toString()}"}')
+                as Map<String, dynamic>);
+        return TokenJWT.fromJson(data);
+      }
     }
   }
 
@@ -117,8 +125,7 @@ class Connection {
     }
   }
 
-  Future getCardByIDUser(String token, String id_user,
-      {int retryCount = 3}) async {
+  Future getCardByIDUser(String token, String id_user) async {
     try {
       Uri uri = Uri.parse("${url}card/id-user/${id_user}");
       final response = await http.get(
@@ -129,10 +136,9 @@ class Connection {
           (json.decode(response.body) as Map<String, dynamic>);
       if (response.statusCode == 200) {
         return ListCard.fromJson(data);
-      } else if (response.statusCode == 401 && retryCount > 0) {
-        refreshTokenAction();
-        // After refreshing the token, make the API call again with one less retry count
-        return getCardByIDUser(token, id_user, retryCount: retryCount - 1);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        return getCardByIDUser(newToken!, id_user);
       } else {
         return ListCard.fromJson(data);
       }
