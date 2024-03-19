@@ -1,13 +1,50 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/Auth/Login.dart';
 import '../Models/DetailTransaction/DetailTransaction.dart';
 import '../Models/ListCard/ListCard.dart';
 import '../Models/ListTransaction/ListTransaction.dart';
+import '../Models/TokenJWT/TokenJWT.dart';
 
 class Connection {
   final String url = "http://192.168.100.75:3000/api/v1/";
+
+  _setHeaders(String token) => {
+        'Content-type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+  Future checkRefreshToken() async {
+    final pref = await SharedPreferences.getInstance();
+    return await pref.getString('refreshToken');
+  }
+
+  Future refreshTokenAction() async {
+    try {
+      Uri uri = Uri.parse("${url}refresh-token");
+      String? refreshToken = await checkRefreshToken();
+      final response = await http.get(
+        uri,
+        headers: _setHeaders(refreshToken.toString()),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        print(data);
+        TokenJWT tokenJWT = TokenJWT.fromJson(data);
+        final pref = await SharedPreferences.getInstance();
+        // pref.setString("accessToken", tokenJWT.data!.accessToken);
+        pref.setString("refreshToken", tokenJWT.data!.refreshToken);
+      } else {
+        print(data);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   Future loginAction(String username, String password) async {
     try {
@@ -80,14 +117,22 @@ class Connection {
     }
   }
 
-  Future getCardByID(String id_user) async {
+  Future getCardByIDUser(String token, String id_user,
+      {int retryCount = 3}) async {
     try {
       Uri uri = Uri.parse("${url}card/id-user/${id_user}");
-      final response = await http.get(uri);
+      final response = await http.get(
+        uri,
+        headers: _setHeaders(token),
+      );
       Map<String, dynamic> data =
           (json.decode(response.body) as Map<String, dynamic>);
       if (response.statusCode == 200) {
         return ListCard.fromJson(data);
+      } else if (response.statusCode == 401 && retryCount > 0) {
+        refreshTokenAction();
+        // After refreshing the token, make the API call again with one less retry count
+        return getCardByIDUser(token, id_user, retryCount: retryCount - 1);
       } else {
         return ListCard.fromJson(data);
       }
