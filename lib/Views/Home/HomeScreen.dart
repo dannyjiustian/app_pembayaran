@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:card_swiper/card_swiper.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -14,6 +16,7 @@ import '../../Function/formatDateOnly.dart';
 import '../../Models/JWT/JWTDecode.dart';
 import '../../Models/ListCard/ListCard.dart';
 import '../../Models/ListTransaction/ListTransaction.dart';
+import '../Auth/LoginScreen.dart';
 import '../Card/DetectCardScreen.dart';
 import '../Widget/ButtonWidget.dart';
 import '../Widget/CardBannerWidget.dart';
@@ -35,6 +38,7 @@ String? accessToken;
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   Connection conn = Connection();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   int _selectedIndexBottomNav = 0, _selectedIndexTab = 0;
   PageController _pageController = PageController(initialPage: 0);
   Future<ListCard>? _futureDataCard;
@@ -46,10 +50,31 @@ class _HomeScreenState extends State<HomeScreen>
   Future checkLocalStorage() async {
     final pref = await SharedPreferences.getInstance();
     accessToken = pref.getString('accessToken');
+    // pref.setString("refreshToken",
+    //     "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiYTI3MGU5N2YtY2E1ZS00NTQ3LWJlN2QtMjVlZTcxZjE4ODI0IiwiaWF0IjoxNzA5MjE0ODIzLCJleHAiOjE3MDkyMTg0MjN9.nMVjX6fX1vscnrcmbRZHt-UgIQXzAK2VlZK5Dgla-4AcEVSYJPm0-rwLXeSeJCIZdHAAWqLBv-2pn_FNihWD-Q");
   }
 
   Future<ListCard> fetchDataCard() async {
-    return await conn.getCardByID("${jwtData?.id_user}");
+    ListCard data = await conn.getCardByIDUser(accessToken!, jwtData!.id_user);
+    if (!data.status)
+      navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(builder: (context) => LoginScreen()));
+    return data;
+
+    // print(data.status);
+    // print(data.message);
+    // return data;
+    // // try {
+    // //   return await conn.getCardByIDUser(accessToken!, jwtData!.id_user);
+    // // } catch (e) {
+    // //   print(e);
+    //   navigatorKey.currentState?.pushReplacement(
+    //       MaterialPageRoute(builder: (context) => LoginScreen()));
+    // //   Map<String, dynamic> data =
+    // //       (json.decode('{"status": false, "message": "${e.toString()}"}')
+    // //           as Map<String, dynamic>);
+    // //   return ListCard.fromJson(data);
+    // // }
   }
 
   Future<ListTransaction> fetchDataLastTransaction() async {
@@ -77,6 +102,12 @@ class _HomeScreenState extends State<HomeScreen>
       } else if (_selectedIndexBottomNav == 1 && _selectedIndexTab == 1) {
         _futureDataTransactionOnProcess = fetchDataTransactionOnProcess();
       }
+      checkLocalStorage().then((value) {
+        setState(() {
+          jwtData =
+              JWTDecode.fromJson(JWT.decode(accessToken.toString()).payload);
+        });
+      });
     });
   }
 
@@ -134,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen>
         MediaQuery.of(context).padding.top;
 
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: "Home",
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(
