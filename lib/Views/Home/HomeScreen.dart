@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:card_swiper/card_swiper.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -118,7 +116,6 @@ class _HomeScreenState extends State<HomeScreen>
       } else if (_selectedIndexBottomNav == 1 && _selectedIndexTab == 1) {
         _futureDataTransactionOnProcess = fetchDataTransactionOnProcess();
       }
-      print("old ${accessToken}");
     });
   }
 
