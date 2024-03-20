@@ -8,6 +8,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Connection/Connection.dart';
 import '../../Function/cutString.dart';
@@ -15,27 +16,74 @@ import '../../Function/formatDateFull.dart';
 import '../../Function/formatDateOnly.dart';
 import '../../Function/formatTime.dart';
 import '../../Function/formatToRupiah.dart';
+import '../../Models/DetailTransaction/DetailTransaction.dart';
+import '../Auth/LoginScreen.dart';
 import '../Widget/ButtonWidget.dart';
 import '../Widget/IconAppbarCostuimeWidget.dart';
 import '../Widget/LoadingDetailTransactionWidget.dart';
 
 class DetailTransaksiScreen extends StatefulWidget {
-  const DetailTransaksiScreen({
-    super.key,
-    required this.idTransaction,
-    required this.status,
-    this.refreshCallback
-  });
+  const DetailTransaksiScreen(
+      {super.key,
+      required this.idTransaction,
+      required this.status,
+      this.refreshToken,
+      this.refreshCallback});
 
   final String idTransaction, status;
-  final VoidCallback? refreshCallback;
+  final VoidCallback? refreshToken, refreshCallback;
 
   @override
   State<DetailTransaksiScreen> createState() => _DetailTransaksiScreenState();
 }
 
+String? accessToken;
+
 class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
   Connection conn = Connection();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  Future<DetailTransaction>? _futureDataDetailTransaction;
+
+  Future checkLocalStorage() async {
+    final pref = await SharedPreferences.getInstance();
+    accessToken = pref.getString('accessToken');
+  }
+
+  Future<DetailTransaction> fetchDataDetailTransaction() async {
+    DetailTransaction data = await conn.getTransasctionByIDTransaction(
+        accessToken!, widget.idTransaction,
+        status: widget.status == "On Proses" ? false : true);
+    if (!data.status && data.message == "refresh token verification failed") {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: 'Oops...',
+        text: 'Silakan Login Kembali, Karena 3 Hari Tidak Ada Buka Aplikasi',
+      );
+      navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(builder: (context) => LoginScreen()));
+    }
+    setState(() {
+      checkLocalStorage();
+    });
+    return data;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkLocalStorage().then((value) {
+      setState(() {
+        _futureDataDetailTransaction = fetchDataDetailTransaction();
+        print("sadasds ${accessToken}");
+      });
+    });
+
+    // Initialize _futureDataDetailTransaction with Future.value
+    _futureDataDetailTransaction = Future.value(
+        DetailTransaction(status: false, message: "Waiting data!"));
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQueryHeight = MediaQuery.of(context).size.height;
@@ -61,6 +109,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top;
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: "Detail Transaksi",
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(
@@ -79,6 +128,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                 IconAppbarCustomWidget(
                   iconType: Iconsax.arrow_left_2,
                   functionTap: () async {
+                    widget.refreshToken!();
                     Navigator.of(context).pop();
                   },
                 ),
@@ -94,23 +144,21 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
             ),
             Expanded(
               child: FutureBuilder(
-                  future: conn.getTransasctionByIDTransaction(
-                      widget.idTransaction,
-                      status: widget.status == "On Proses" ? false : true),
-                  builder: (contextFuture, snapshot) {
+                  future: _futureDataDetailTransaction,
+                  builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return LoadingDetailTransactionWidget(
                           mediaQueryWidth:
                               mediaQueryWidth); // Show loading indicator while fetching data
                     } else {
-                      if (snapshot.data.data != null) {
+                      if (snapshot.data!.status) {
                         return Column(
                           children: [
                             const SizedBox(
                               height: 30,
                             ),
                             SvgPicture.asset(
-                              "assets/img/svg/${snapshot.data!.data.status == "Selesai" ? "success_transaction" : snapshot.data!.data.status == "Batal" ? "error_transaction" : "process_transaction"}.svg",
+                              "assets/img/svg/${snapshot.data!.data!.status == "Selesai" ? "success_transaction" : snapshot.data!.data!.status == "Batal" ? "error_transaction" : "process_transaction"}.svg",
                               width: 150,
                             ),
                             const SizedBox(
@@ -118,11 +166,12 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                             ),
                             Text(
                                 formatToRupiah(
-                                    snapshot.data!.data.total_payment,
-                                    type: snapshot.data!.data.type),
+                                    snapshot.data!.data!.total_payment,
+                                    type: snapshot.data!.data!.type),
                                 style: GoogleFonts.poppins(
                                     fontSize: 24, fontWeight: FontWeight.w600)),
-                            Text(formatDateFull(snapshot.data!.data.updated_at),
+                            Text(
+                                formatDateFull(snapshot.data!.data!.updated_at),
                                 style: GoogleFonts.poppins(fontSize: 14)),
                             const SizedBox(
                               height: 10,
@@ -131,16 +180,16 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(90),
                                 border: Border.all(color: Colors.grey.shade300),
-                                color: snapshot.data!.data.status == "Selesai"
+                                color: snapshot.data!.data!.status == "Selesai"
                                     ? Colors.blue.shade100
-                                    : snapshot.data!.data.status == "Batal"
+                                    : snapshot.data!.data!.status == "Batal"
                                         ? Colors.red.shade100
                                         : Colors.amber.shade100,
                               ),
                               child: Padding(
                                 padding:
                                     const EdgeInsets.fromLTRB(15, 8, 15, 8),
-                                child: Text(snapshot.data!.data.status,
+                                child: Text(snapshot.data!.data!.status,
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600)),
@@ -173,7 +222,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                   children: [
                                     Text(
                                         cutString(
-                                            snapshot.data!.data.id_transaction,
+                                            snapshot.data!.data!.id_transaction,
                                             cut: 13,
                                             change: "..."),
                                         style: GoogleFonts.poppins(
@@ -185,8 +234,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                     InkWell(
                                       onTap: () {
                                         Clipboard.setData(ClipboardData(
-                                                text: snapshot
-                                                    .data!.data.id_transaction))
+                                                text: snapshot.data!.data!
+                                                    .id_transaction))
                                             .then((_) {
                                           Fluttertoast.showToast(
                                             msg: 'ID Transaksi Tersalin',
@@ -219,7 +268,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                   children: [
                                     Text(
                                         cutString(
-                                            snapshot.data!.data.id_hardware,
+                                            snapshot.data!.data!.id_hardware,
                                             cut: 13,
                                             change: "..."),
                                         style: GoogleFonts.poppins(
@@ -232,7 +281,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                       onTap: () {
                                         Clipboard.setData(ClipboardData(
                                                 text: snapshot
-                                                    .data!.data.id_hardware))
+                                                    .data!.data!.id_hardware))
                                             .then((_) {
                                           Fluttertoast.showToast(
                                             msg: 'ID Mesin Tersalin',
@@ -264,8 +313,10 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
-                                        cutString(snapshot.data!.data.id_outlet,
-                                            cut: 13, change: "..."),
+                                        cutString(
+                                            snapshot.data!.data!.id_outlet,
+                                            cut: 13,
+                                            change: "..."),
                                         style: GoogleFonts.poppins(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600)),
@@ -276,7 +327,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                       onTap: () {
                                         Clipboard.setData(ClipboardData(
                                                 text: snapshot
-                                                    .data!.data.id_outlet))
+                                                    .data!.data!.id_outlet))
                                             .then((_) {
                                           Fluttertoast.showToast(
                                             msg: 'ID Toko Tersalin',
@@ -303,7 +354,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600)),
-                                snapshot.data!.data.txn_hash != null
+                                snapshot.data!.data!.txn_hash != null
                                     ? Expanded(
                                         child: Row(
                                         mainAxisAlignment:
@@ -311,7 +362,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                         children: [
                                           Text(
                                               cutString(
-                                                  snapshot.data!.data.txn_hash,
+                                                  snapshot
+                                                      .data!.data!.txn_hash!,
                                                   cut: 13,
                                                   change: "..."),
                                               style: GoogleFonts.poppins(
@@ -323,8 +375,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                           InkWell(
                                             onTap: () {
                                               Clipboard.setData(ClipboardData(
-                                                      text: snapshot
-                                                          .data!.data.txn_hash))
+                                                      text: snapshot.data!.data!
+                                                          .txn_hash!))
                                                   .then((_) {
                                                 Fluttertoast.showToast(
                                                   msg: 'TXN Hash Tersalin',
@@ -343,7 +395,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                           )
                                         ],
                                       ))
-                                    : snapshot.data!.data.status == "On Proses"
+                                    : snapshot.data!.data!.status == "On Proses"
                                         ? Text("Menunggu Selesai",
                                             style: GoogleFonts.poppins(
                                                 fontSize: 14,
@@ -363,7 +415,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                         fontWeight: FontWeight.w600)),
                                 Text(
                                     formatDateOnly(
-                                        snapshot.data!.data.updated_at),
+                                        snapshot.data!.data!.updated_at),
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600)),
@@ -376,7 +428,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600)),
-                                Text(formatTime(snapshot.data!.data.updated_at),
+                                Text(
+                                    formatTime(snapshot.data!.data!.updated_at),
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600)),
@@ -391,8 +444,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                         fontWeight: FontWeight.w600)),
                                 Text(
                                     formatToRupiah(
-                                        snapshot.data!.data.total_payment,
-                                        type: snapshot.data!.data.type),
+                                        snapshot.data!.data!.total_payment,
+                                        type: snapshot.data!.data!.type),
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600)),
@@ -409,7 +462,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                               dashGapLength: 3.0,
                               dashGapColor: Colors.transparent,
                             ),
-                            snapshot.data!.data.status == "Selesai"
+                            snapshot.data!.data!.status == "Selesai"
                                 ? Expanded(
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.end,
@@ -423,7 +476,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                       ],
                                     ),
                                   )
-                                : snapshot.data!.data.status == "On Proses"
+                                : snapshot.data!.data!.status == "On Proses"
                                     ? Expanded(
                                         child: Column(
                                           mainAxisAlignment:
@@ -435,7 +488,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                               colorSetText: Colors.white,
                                               functionTap: () async {
                                                 QuickAlert.show(
-                                                  context: contextFuture,
+                                                  context: context,
                                                   type: QuickAlertType.confirm,
                                                   title: "Kamu Yakin?",
                                                   text:
@@ -448,15 +501,15 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                   onConfirmBtnTap: () async {
                                                     var res = await conn
                                                         .cancelTransaction(
-                                                            snapshot.data!.data
+                                                            snapshot.data!.data!
                                                                 .id_transaction);
-                                                    Navigator.of(contextFuture,
+                                                    Navigator.of(context,
                                                             rootNavigator: true)
                                                         .pop();
                                                     if (mounted &&
                                                         res!.status) {
                                                       QuickAlert.show(
-                                                        context: contextFuture,
+                                                        context: context,
                                                         type: QuickAlertType
                                                             .success,
                                                         title: "Berhasil",
@@ -465,13 +518,14 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                         barrierDismissible:
                                                             false,
                                                       ).then((value) {
-                                                        widget.refreshCallback!();
+                                                        widget
+                                                            .refreshCallback!();
                                                         Navigator.of(context)
                                                             .pop();
                                                       });
                                                     } else {
                                                       QuickAlert.show(
-                                                        context: contextFuture,
+                                                        context: context,
                                                         type: QuickAlertType
                                                             .error,
                                                         title: 'Oops...',
