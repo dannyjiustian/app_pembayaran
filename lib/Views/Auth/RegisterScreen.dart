@@ -4,11 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 import '../../Connection/Connection.dart';
 import '../Widget/AlertWidget.dart';
 import '../Widget/ButtonWidget.dart';
-import '../Widget/CardAlertCustomWidget.dart';
 import '../Widget/LoadingWidget.dart';
 import '../Widget/TextFieldInputWidget.dart';
 import 'LoginScreen.dart';
@@ -258,55 +259,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         _loading = false;
                                       });
                                       if (res!.status) {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return CardAlertCustomWidget(
-                                                  bodyHeight: bodyHeight * 0.25,
-                                                  bodyScreen: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        "Akun telah berhasil dibuat silakan login!",
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      ButtonWidget(
-                                                        buttonText:
-                                                            "Kembali ke login",
-                                                        colorSetBody:
-                                                            Colors.blue,
-                                                        colorSetText:
-                                                            Colors.white,
-                                                        functionTap: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          Navigator.pushReplacement(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (builder) {
-                                                            return const LoginScreen();
-                                                          }));
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ));
-                                            });
+                                        QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.success,
+                                          title: "Berhasil",
+                                          text: "Akun Baru Berhasil Dibuat!",
+                                          barrierDismissible: false,
+                                        ).then((value) {
+                                          Navigator.pushReplacement(context,
+                                              MaterialPageRoute(
+                                                  builder: (builder) {
+                                            return const LoginScreen();
+                                          }));
+                                        });
                                       } else {
                                         AlertWidget(
                                                 mediaQueryWidth,
