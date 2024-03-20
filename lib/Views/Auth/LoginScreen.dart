@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final email = TextEditingController();
+  final username = TextEditingController();
   final password = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -106,8 +106,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           TextFieldInputWidget(
-                            nameController: email,
-                            label: "Email",
+                            nameController: username,
+                            label: "Username",
                             obscureCondition: false,
                             keyboardNext: true,
                             keyboard: false,
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         _loading = true;
                                       });
                                       var res = await conn.loginAction(
-                                          email.text, password.text);
+                                          username.text, password.text);
                                       setState(() {
                                         _loading = false;
                                       });
