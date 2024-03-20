@@ -1,19 +1,15 @@
-// ignore_for_file: use_build_context_synchronously, unused_local_variable
-
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 import '../../Connection/Connection.dart';
-import '../../Models/JWT/JWTDecode.dart';
 import '../Widget/AlertWidget.dart';
 import '../Widget/ButtonWidget.dart';
-import '../Widget/CardAlertCustomWidget.dart';
 import '../Widget/LoadingWidget.dart';
 import '../Widget/TextFieldInputWidget.dart';
 import 'LoginScreen.dart';
@@ -166,55 +162,19 @@ class _ResetScreenState extends State<ResetScreen> {
                                       }
 
                                       if (res!.status) {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return CardAlertCustomWidget(
-                                                  bodyHeight: bodyHeight * 0.25,
-                                                  bodyScreen: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        "Akun telah berhasil direset passwordnya!",
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
-                                                      SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      ButtonWidget(
-                                                        buttonText:
-                                                            "Kembali ke login",
-                                                        colorSetBody:
-                                                            Colors.blue,
-                                                        colorSetText:
-                                                            Colors.white,
-                                                        functionTap: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          Navigator.pushReplacement(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (builder) {
-                                                            return LoginScreen();
-                                                          }));
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ));
-                                            });
+                                        QuickAlert.show(
+                                          context: context,
+                                          type: QuickAlertType.success,
+                                          title: "Berhasil",
+                                          text: "Akun Berhasil Direset!",
+                                          barrierDismissible: false,
+                                        ).then((value) {
+                                          Navigator.pushReplacement(context,
+                                              MaterialPageRoute(
+                                                  builder: (builder) {
+                                            return const LoginScreen();
+                                          }));
+                                        });
                                       } else {
                                         AlertWidget(
                                                 mediaQueryWidth,
