@@ -9,6 +9,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Connection/Connection.dart';
@@ -50,46 +52,59 @@ class _HomeScreenState extends State<HomeScreen>
   Future checkLocalStorage() async {
     final pref = await SharedPreferences.getInstance();
     accessToken = pref.getString('accessToken');
-    // pref.setString("refreshToken",
-    //     "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiYTI3MGU5N2YtY2E1ZS00NTQ3LWJlN2QtMjVlZTcxZjE4ODI0IiwiaWF0IjoxNzA5MjE0ODIzLCJleHAiOjE3MDkyMTg0MjN9.nMVjX6fX1vscnrcmbRZHt-UgIQXzAK2VlZK5Dgla-4AcEVSYJPm0-rwLXeSeJCIZdHAAWqLBv-2pn_FNihWD-Q");
+  }
+
+  void refreshToken() {
+    setState(() {
+      checkLocalStorage().then((value) {
+        setState(() {
+          jwtData =
+              JWTDecode.fromJson(JWT.decode(accessToken.toString()).payload);
+        });
+      });
+    });
+  }
+
+  void detectAndRefreshData(data) {
+    if (!data.status && data.message == "refresh token verification failed") {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: 'Oops...',
+        text: 'Silakan Login Kembali, Karena 3 Hari Tidak Ada Buka Aplikasi',
+      );
+      navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(builder: (context) => LoginScreen()));
+    }
+    refreshToken();
   }
 
   Future<ListCard> fetchDataCard() async {
     ListCard data = await conn.getCardByIDUser(accessToken!, jwtData!.id_user);
-    if (!data.status)
-      navigatorKey.currentState?.pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginScreen()));
+    detectAndRefreshData(data);
     return data;
-
-    // print(data.status);
-    // print(data.message);
-    // return data;
-    // // try {
-    // //   return await conn.getCardByIDUser(accessToken!, jwtData!.id_user);
-    // // } catch (e) {
-    // //   print(e);
-    //   navigatorKey.currentState?.pushReplacement(
-    //       MaterialPageRoute(builder: (context) => LoginScreen()));
-    // //   Map<String, dynamic> data =
-    // //       (json.decode('{"status": false, "message": "${e.toString()}"}')
-    // //           as Map<String, dynamic>);
-    // //   return ListCard.fromJson(data);
-    // // }
   }
 
   Future<ListTransaction> fetchDataLastTransaction() async {
-    return await conn.getTransasctionByIDUser("${jwtData?.id_user}",
+    ListTransaction data = await conn.getTransasctionByIDUser(
+        accessToken!, jwtData!.id_user,
         status: true, take: 5);
+    detectAndRefreshData(data);
+    return data;
   }
 
   Future<ListTransaction> fetchDataTransactionFinish() async {
-    return await conn.getTransasctionByIDUser("${jwtData?.id_user}",
-        status: true);
+    ListTransaction data = await conn
+        .getTransasctionByIDUser(accessToken!, jwtData!.id_user, status: true);
+    detectAndRefreshData(data);
+    return data;
   }
 
   Future<ListTransaction> fetchDataTransactionOnProcess() async {
-    return await conn.getTransasctionByIDUser("${jwtData?.id_user}",
-        status: false);
+    ListTransaction data = await conn
+        .getTransasctionByIDUser(accessToken!, jwtData!.id_user, status: false);
+    detectAndRefreshData(data);
+    return data;
   }
 
   Future<void> refreshData() async {
@@ -102,12 +117,7 @@ class _HomeScreenState extends State<HomeScreen>
       } else if (_selectedIndexBottomNav == 1 && _selectedIndexTab == 1) {
         _futureDataTransactionOnProcess = fetchDataTransactionOnProcess();
       }
-      checkLocalStorage().then((value) {
-        setState(() {
-          jwtData =
-              JWTDecode.fromJson(JWT.decode(accessToken.toString()).payload);
-        });
-      });
+      print("old ${accessToken}");
     });
   }
 
@@ -131,6 +141,10 @@ class _HomeScreenState extends State<HomeScreen>
       _futureDataCard = fetchDataCard();
       _futureDataLastTransaction = fetchDataLastTransaction();
     });
+    _futureDataCard =
+        Future.value(ListCard(status: false, message: "Waiting data!"));
+    _futureDataLastTransaction =
+        Future.value(ListTransaction(status: false, message: "Waiting data!"));
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {
@@ -239,6 +253,8 @@ class _HomeScreenState extends State<HomeScreen>
                                   return LoadingCardRFIDVirtualWidget(
                                     mediaQueryWidth: mediaQueryWidth,
                                   );
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
                                 } else {
                                   if (snapshot.data!.status) {
                                     return SizedBox(
@@ -422,6 +438,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 snapshot.data!.data!.length,
                                             itemBuilder: (context, index) =>
                                                 CardListTransactionWidget(
+                                                    refreshToken: refreshToken,
                                                     status: snapshot.data!
                                                         .data![index].status,
                                                     idTransaction: snapshot
@@ -513,10 +530,12 @@ class _HomeScreenState extends State<HomeScreen>
                                         if (snapshot.data!.status) {
                                           return ListView.separated(
                                               padding: const EdgeInsets.all(20),
-                                              itemCount:
-                                                  snapshot.data!.data!.length,
+                                              itemCount: snapshot
+                                                  .data!.data!.length,
                                               itemBuilder: (context, index) =>
                                                   CardListTransactionWidget(
+                                                      refreshToken:
+                                                          refreshToken,
                                                       status: snapshot.data!
                                                           .data![index].status,
                                                       idTransaction: snapshot
@@ -590,10 +609,12 @@ class _HomeScreenState extends State<HomeScreen>
                                             snapshot.hasData) {
                                           return ListView.separated(
                                               padding: const EdgeInsets.all(20),
-                                              itemCount: snapshot
-                                                  .data!.data!.length,
+                                              itemCount:
+                                                  snapshot.data!.data!.length,
                                               itemBuilder: (context, index) =>
                                                   CardListTransactionWidget(
+                                                      refreshToken:
+                                                          refreshToken,
                                                       refreshCallback:
                                                           refreshDataAfterCancel,
                                                       status: snapshot.data!
