@@ -15,7 +15,7 @@ class CardListTransactionWidget extends StatelessWidget {
     required this.updatedAt,
     required this.idTransaction,
     required this.status,
-      this.refreshToken,
+    this.refreshToken,
     this.refreshCallback,
   });
 
