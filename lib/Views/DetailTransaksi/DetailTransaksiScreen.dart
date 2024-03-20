@@ -145,7 +145,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
             Expanded(
               child: FutureBuilder(
                   future: _futureDataDetailTransaction,
-                  builder: (context, snapshot) {
+                  builder: (contextFuture, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return LoadingDetailTransactionWidget(
                           mediaQueryWidth:
@@ -501,15 +501,16 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                   onConfirmBtnTap: () async {
                                                     var res = await conn
                                                         .cancelTransaction(
+                                                            accessToken!,
                                                             snapshot.data!.data!
                                                                 .id_transaction);
-                                                    Navigator.of(context,
+                                                    Navigator.of(contextFuture,
                                                             rootNavigator: true)
                                                         .pop();
                                                     if (mounted &&
                                                         res!.status) {
                                                       QuickAlert.show(
-                                                        context: context,
+                                                        context: contextFuture,
                                                         type: QuickAlertType
                                                             .success,
                                                         title: "Berhasil",
@@ -525,7 +526,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                       });
                                                     } else {
                                                       QuickAlert.show(
-                                                        context: context,
+                                                        context: contextFuture,
                                                         type: QuickAlertType
                                                             .error,
                                                         title: 'Oops...',
