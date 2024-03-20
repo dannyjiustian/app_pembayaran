@@ -20,6 +20,7 @@ import '../../Models/ListCard/ListCard.dart';
 import '../../Models/ListTransaction/ListTransaction.dart';
 import '../Auth/LoginScreen.dart';
 import '../Card/DetectCardScreen.dart';
+import '../Profile/ProfileScreen.dart';
 import '../Widget/ButtonWidget.dart';
 import '../Widget/CardBannerWidget.dart';
 import '../Widget/CardListTransactionWidget.dart';
@@ -708,7 +709,14 @@ class _HomeScreenState extends State<HomeScreen>
                                 buttonText: "Perbaharui Profile",
                                 colorSetBody: Colors.blue.shade100,
                                 colorSetText: Colors.black,
-                                functionTap: () => {}),
+                                functionTap: () => {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ProfileScreen(
+                                                      refreshToken:
+                                                          refreshToken)))
+                                    }),
                             const SizedBox(
                               height: 10,
                             ),
