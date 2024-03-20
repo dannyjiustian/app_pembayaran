@@ -37,14 +37,14 @@ class Connection {
         final pref = await SharedPreferences.getInstance();
         pref.setString("accessToken", tokenJWT.data!.accessToken);
         pref.setString("refreshToken", tokenJWT.data!.refreshToken);
-        print(tokenJWT.data!.accessToken);
+        print("new " + tokenJWT.data!.accessToken);
         return tokenJWT.data!.accessToken;
       } else {
         throw Exception("1");
       }
     } catch (e) {
       if (e.toString() == "Exception: 1") {
-        throw Exception('Failed to refresh token');
+        return null;
       } else {
         Map<String, dynamic> data =
             (json.decode('{"status": false, "message": "${e.toString()}"}')
@@ -138,7 +138,11 @@ class Connection {
         return ListCard.fromJson(data);
       } else if (response.statusCode == 401) {
         String? newToken = await refreshTokenAction();
-        return getCardByIDUser(newToken!, id_user);
+        if (newToken != null) {
+          return getCardByIDUser(newToken, id_user);
+        } else {
+          return ListCard.fromJson(data);
+        }
       } else {
         return ListCard.fromJson(data);
       }
@@ -150,7 +154,7 @@ class Connection {
     }
   }
 
-  Future getTransasctionByIDUser(String id_user,
+  Future getTransasctionByIDUser(String token, String id_user,
       {int? take, bool? status}) async {
     try {
       String urlQuery = "${url}transaction/id-user/$id_user";
@@ -162,11 +166,22 @@ class Connection {
         urlQuery += "?status=$status";
       }
       Uri uri = Uri.parse(urlQuery);
-      final response = await http.get(uri);
+      final response = await http.get(
+        uri,
+        headers: _setHeaders(token),
+      );
       Map<String, dynamic> data =
           (json.decode(response.body) as Map<String, dynamic>);
       if (response.statusCode == 200) {
         return ListTransaction.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return getTransasctionByIDUser(newToken, id_user,
+              take: take, status: status);
+        } else {
+          return ListTransaction.fromJson(data);
+        }
       } else {
         return ListTransaction.fromJson(data);
       }
@@ -178,17 +193,28 @@ class Connection {
     }
   }
 
-  Future getTransasctionByIDTransaction(String id_transaction,
+  Future getTransasctionByIDTransaction(String token, String id_transaction,
       {bool? status}) async {
     try {
       String urlQuery = "${url}transaction/$id_transaction";
       if (status != null) urlQuery += "?status=$status";
       Uri uri = Uri.parse(urlQuery);
-      final response = await http.get(uri);
+      final response = await http.get(
+        uri,
+        headers: _setHeaders(token),
+      );
       Map<String, dynamic> data =
           (json.decode(response.body) as Map<String, dynamic>);
       if (response.statusCode == 200) {
         return DetailTransaction.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return getTransasctionByIDTransaction(newToken, id_transaction,
+              status: status);
+        } else {
+          return DetailTransaction.fromJson(data);
+        }
       } else {
         return DetailTransaction.fromJson(data);
       }
