@@ -1,4 +1,4 @@
-import 'package:app_pembayaran/Views/Card/SuccessScreen.dart';
+import 'package:app_pembayaran/Views/SuccessScreen/SuccessScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -155,8 +155,8 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                         colorSetText: Colors.white,
                         functionTap: () async {
                           FocusScope.of(context).unfocus();
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const SuccessScreen()));
+                          // Navigator.of(context).push(MaterialPageRoute(
+                          //     builder: (context) => const SuccessScreen()));
                         },
                       ),
                     ],
