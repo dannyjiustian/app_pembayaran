@@ -9,7 +9,14 @@ import '../Home/HomeScreen.dart';
 import '../Widget/ButtonWidget.dart';
 
 class SuccessScreen extends StatelessWidget {
-  const SuccessScreen({super.key});
+  const SuccessScreen({
+    super.key,
+    required this.typeDetect,
+    this.refreshToken,
+  });
+
+  final int typeDetect;
+  final VoidCallback? refreshToken;
 
   @override
   Widget build(BuildContext context) {
@@ -59,19 +66,27 @@ class SuccessScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          "Selamat Telah Melakukan Top Up!",
+                          "Selamat Telah Melakukan ${typeDetect == 1 ? "Top Up!" : typeDetect == 2 ? "Daftar Kartu!" : "lain"}",
                           style: GoogleFonts.poppins(
                               fontSize: 20, fontWeight: FontWeight.w600),
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          "Saldo berhasil ditambahkan keakunmu, silakan kembali ke home untuk mengeceknya!",
+                          typeDetect == 1
+                              ? "Saldo berhasil ditambahkan keakunmu, silakan kembali ke home untuk mengeceknya!"
+                              : typeDetect == 2
+                                  ? "Kartu Baru berhasil didaftarkan ke akun kamu!"
+                                  : "lainnya",
                           style: GoogleFonts.poppins(
                               fontSize: 14, color: Colors.grey.shade500),
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          "Untuk Mebilhat detail transaksi dapat ke menuu history.",
+                          typeDetect == 1
+                              ? "Untuk Melihat detail transaksi dapat ke menuu history."
+                              : typeDetect == 2
+                                  ? "Kembali ke Home untuk melihat kartu!"
+                                  : "lainnya",
                           style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: Colors.grey.shade500,
@@ -90,10 +105,8 @@ class SuccessScreen extends StatelessWidget {
                         colorSetBody: Colors.blue,
                         colorSetText: Colors.white,
                         functionTap: () {
-                          Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (context) => HomeScreen()),
-                              (Route<dynamic> route) => false);
+                          refreshToken!();
+                          Navigator.of(context).pop();
                         },
                       ),
                     ],
