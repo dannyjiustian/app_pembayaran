@@ -9,12 +9,11 @@ class CardRFIDVirtualWidget extends StatelessWidget {
   const CardRFIDVirtualWidget({
     super.key,
     required this.mediaQueryWidth,
-    required this.idCard,
     required this.saldo,
-    required this.walletAddress,
+    this.walletAddress,
   });
 
-  final String idCard, walletAddress;
+  final String? walletAddress;
   final double mediaQueryWidth;
   final int saldo;
 
@@ -72,13 +71,15 @@ class CardRFIDVirtualWidget extends StatelessWidget {
                             color: Colors.black),
                       ),
                     ]),
-                Text(
-                  cutString(walletAddress),
-                  style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                ),
+                walletAddress != null
+                    ? Text(
+                        cutString(walletAddress!),
+                        style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black),
+                      )
+                    : SizedBox(),
               ],
             )
           ],
