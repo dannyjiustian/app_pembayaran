@@ -6,7 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../Card/SuccessScreen.dart';
+import '../SuccessScreen/SuccessScreen.dart';
 import '../Widget/ButtonWidget.dart';
 import '../Widget/IconAppbarCostuimeWidget.dart';
 import '../Widget/TextFieldInputWidget.dart';
@@ -112,8 +112,8 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                         colorSetText: Colors.white,
                         functionTap: () async {
                           FocusScope.of(context).unfocus();
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const SuccessScreen()));
+                          // Navigator.of(context).push(MaterialPageRoute(
+                          //     builder: (context) => const SuccessScreen()));
                         },
                       ),
                     ],
