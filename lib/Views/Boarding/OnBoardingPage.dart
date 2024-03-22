@@ -11,8 +11,9 @@ import '../Auth/LoginScreen.dart';
 import '../Home/HomeScreen.dart';
 
 class OnBoardingPage extends StatefulWidget {
-  const OnBoardingPage({super.key, required this.valueHome});
+  const OnBoardingPage({super.key, required this.valueHome, required this.navigatorKey});
   final int valueHome;
+ final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   State<OnBoardingPage> createState() => _OnBoardingPageState();
@@ -93,7 +94,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             if (isLocationServiceOn) {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (builder) {
-                return widget.valueHome == 0 ? LoginScreen() : HomeScreen();
+                return widget.valueHome == 0 ? LoginScreen(navigatorKey: widget.navigatorKey,) : HomeScreen(navigatorKey: widget.navigatorKey,);
               }));
             }
           }
