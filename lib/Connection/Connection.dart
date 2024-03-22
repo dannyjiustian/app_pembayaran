@@ -3,10 +3,13 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/Auth/Login.dart';
+import '../Models/CheckRfid/CheckRfid.dart';
 import '../Models/DetailTransaction/DetailTransaction.dart';
+import '../Models/ListCard/Card.dart';
 import '../Models/ListCard/ListCard.dart';
 import '../Models/ListTransaction/ListTransaction.dart';
 import '../Models/TokenJWT/TokenJWT.dart';
+import '../Models/UpdateCard/UpdateCard.dart';
 
 class Connection {
   final String url = "http://192.168.100.75:3000/api/v1/";
@@ -156,9 +159,12 @@ class Connection {
     }
   }
 
-  Future getCardByIDUser(String token, String id_user) async {
+  Future getCardByIDUser(String token, String id_user,
+      {String? id_rfid}) async {
     try {
-      Uri uri = Uri.parse("${url}card/id-user/${id_user}");
+      String urlQuery = "${url}card/id-user/${id_user}";
+      if (id_rfid != null) urlQuery += "?id_rfid=$id_rfid";
+      Uri uri = Uri.parse(urlQuery);
       final response = await http.get(
         uri,
         headers: _setHeaders(token),
@@ -170,7 +176,7 @@ class Connection {
       } else if (response.statusCode == 401) {
         String? newToken = await refreshTokenAction();
         if (newToken != null) {
-          return getCardByIDUser(newToken, id_user);
+          return getCardByIDUser(newToken, id_user, id_rfid: id_rfid);
         } else {
           return ListCard(
               status: false, message: "refresh token verification failed");
@@ -287,6 +293,131 @@ class Connection {
           (json.decode('{"status": false, "message": "${e.toString()}"}')
               as Map<String, dynamic>);
       return DetailTransaction.fromJson(data);
+    }
+  }
+
+  Future updateCard(String token, String id_card, String balance) async {
+    try {
+      Uri uri = Uri.parse("${url}card/$id_card/update");
+      final response = await http.put(
+        uri,
+        body: {
+          "balance": balance,
+        },
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return UpdateCard.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return updateCard(newToken, id_card, balance);
+        } else {
+          return UpdateCard(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return UpdateCard.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return UpdateCard.fromJson(data);
+    }
+  }
+
+  Future createTransaction(String token, Object body) async {
+    try {
+      Uri uri = Uri.parse("${url}transaction/save");
+      final response = await http.post(
+        uri,
+        body: body,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return DetailTransaction.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return createTransaction(newToken, body);
+        } else {
+          return DetailTransaction(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return DetailTransaction.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return DetailTransaction.fromJson(data);
+    }
+  }
+
+  Future searchCard(String token, String id_rfid) async {
+    try {
+      Uri uri = Uri.parse("${url}card/check/$id_rfid");
+      final response = await http.get(
+        uri,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return CheckRfid.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return searchCard(newToken, id_rfid);
+        } else {
+          return UpdateCard(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return CheckRfid.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return CheckRfid.fromJson(data);
+    }
+  }
+
+  Future saveNewCard(String token, Object body) async {
+    try {
+      Uri uri = Uri.parse("${url}card/save");
+      final response = await http.post(
+        uri,
+        body: body,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return Card.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return saveNewCard(newToken, body);
+        } else {
+          return Card(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return Card.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return Card.fromJson(data);
     }
   }
 }
