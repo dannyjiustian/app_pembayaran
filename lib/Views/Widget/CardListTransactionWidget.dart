@@ -15,10 +15,12 @@ class CardListTransactionWidget extends StatelessWidget {
     required this.updatedAt,
     required this.idTransaction,
     required this.status,
+    required this.navigatorKey,
     this.refreshToken,
     this.refreshCallback,
   });
 
+  final GlobalKey<NavigatorState> navigatorKey;
   final double mediaQueryWidth;
   final int type, totalPayment;
   final String updatedAt, idTransaction, status;
@@ -30,6 +32,7 @@ class CardListTransactionWidget extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => DetailTransaksiScreen(
+              navigatorKey: navigatorKey,
                 idTransaction: idTransaction,
                 status: status,
                 refreshToken: refreshToken,
