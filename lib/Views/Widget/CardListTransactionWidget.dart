@@ -32,7 +32,7 @@ class CardListTransactionWidget extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => DetailTransaksiScreen(
-              navigatorKey: navigatorKey,
+                navigatorKey: navigatorKey,
                 idTransaction: idTransaction,
                 status: status,
                 refreshToken: refreshToken,
@@ -76,9 +76,11 @@ class CardListTransactionWidget extends StatelessWidget {
                             Text(
                               type == 0
                                   ? "Pembayaran"
-                                  : (type == 1)
+                                  : type == 1
                                       ? "Top Up"
-                                      : "",
+                                      : type == 2
+                                          ? "Penarikan Dana"
+                                          : "",
                               style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -109,7 +111,9 @@ class CardListTransactionWidget extends StatelessWidget {
                                   ? "Uang Keluar"
                                   : (type == 1)
                                       ? "Uang Masuk"
-                                      : "",
+                                      : type == 2
+                                          ? "Uang Keluar"
+                                          : "",
                               style: GoogleFonts.poppins(
                                   fontSize: 12, color: Colors.black),
                             ),
