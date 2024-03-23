@@ -1,20 +1,94 @@
-import 'package:app_pembayaran/Views/Reader/FormPairScreen.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:lottie/lottie.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Connection/Connection.dart';
+import '../../Models/JWT/JWTDecode.dart';
+import '../../Models/ListReader/ListReader.dart';
+import '../Auth/LoginScreen.dart';
 import '../Widget/IconAppbarCostuimeWidget.dart';
+import '../Widget/ListReaderWidget.dart';
+import '../Widget/LoadingListTransactionWidget.dart';
+import 'FormPairScreen.dart';
 
 class ListReaderScreen extends StatefulWidget {
-  const ListReaderScreen({super.key});
+  ListReaderScreen({
+    super.key,
+    required this.navigatorKey,
+    required this.typeDetect,
+    this.refreshToken,
+  });
+
+  final int typeDetect;
+  final VoidCallback? refreshToken;
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   State<ListReaderScreen> createState() => _ListReaderScreenState();
 }
 
+JWTDecode? jwtData;
+String? accessToken;
+
 class _ListReaderScreenState extends State<ListReaderScreen> {
+  Connection conn = Connection();
+  Future<ListReader>? _futureDataReader;
+
+  Future checkLocalStorage() async {
+    final pref = await SharedPreferences.getInstance();
+    accessToken = pref.getString('accessToken');
+  }
+
+  void detectAndRefreshData(data) {
+    if (!data.status && data.message == "refresh token verification failed") {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.error,
+        title: 'Oops...',
+        text: 'Silakan Login Kembali, Karena 3 Hari Tidak Ada Buka Aplikasi',
+      );
+      widget.navigatorKey.currentState?.pushReplacement(MaterialPageRoute(
+          builder: (context) => LoginScreen(
+                navigatorKey: widget.navigatorKey,
+              )));
+    }
+    widget.refreshToken!();
+  }
+
+  Future<ListReader> fetchDataReader() async {
+    ListReader data =
+        await conn.getReaderByIDUser(accessToken!, jwtData!.id_user);
+    detectAndRefreshData(data);
+    return data;
+  }
+
+  Future<void> refreshData() async {
+    setState(() {
+      _futureDataReader = fetchDataReader();
+      print("old ${accessToken}");
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkLocalStorage().then((value) {
+      setState(() {
+        jwtData =
+            JWTDecode.fromJson(JWT.decode(accessToken.toString()).payload);
+      });
+      _futureDataReader = fetchDataReader();
+    });
+    _futureDataReader =
+        Future.value(ListReader(status: false, message: "Waiting data!"));
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQueryHeight = MediaQuery.of(context).size.height;
@@ -39,14 +113,16 @@ class _ListReaderScreenState extends State<ListReaderScreen> {
     final bodyHeight = mediaQueryHeight -
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top;
-    return MaterialApp(
-      title: "List Reader",
-      theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(
-          Theme.of(context).textTheme,
-        ),
-      ),
-      home: Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
+        widget.refreshToken!();
+        Navigator.of(context).pop();
+      },
+      child: Scaffold(
         appBar: appBar,
         body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
           Padding(
@@ -57,6 +133,7 @@ class _ListReaderScreenState extends State<ListReaderScreen> {
                 IconAppbarCustomWidget(
                   iconType: Iconsax.arrow_left_2,
                   functionTap: () async {
+                    widget.refreshToken!();
                     Navigator.of(context).pop();
                   },
                 ),
@@ -72,143 +149,122 @@ class _ListReaderScreenState extends State<ListReaderScreen> {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 3),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => FormPairScreen()));
-                      },
-                      child: DottedBorder(
-                        borderType: BorderType.RRect,
-                        radius: const Radius.circular(10),
-                        strokeWidth: 2,
-                        dashPattern: const [6, 3, 6, 3],
-                        color: Colors.grey.shade500,
-                        child: ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12)),
-                          child: Container(
-                            height: 130,
-                            width: mediaQueryWidth - 50,
-                            color: Colors.blue.shade50,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Iconsax.add_square,
-                                  size: 50,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "Tambah Reader Baru",
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black),
-                                ),
-                              ],
+            child: RefreshIndicator(
+              onRefresh: refreshData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 3),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => FormPairScreen()));
+                        },
+                        child: DottedBorder(
+                          borderType: BorderType.RRect,
+                          radius: const Radius.circular(10),
+                          strokeWidth: 2,
+                          dashPattern: const [6, 3, 6, 3],
+                          color: Colors.grey.shade500,
+                          child: ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
+                            child: Container(
+                              height: 130,
+                              width: mediaQueryWidth - 50,
+                              color: Colors.blue.shade50,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Iconsax.add_square,
+                                    size: 50,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    "Tambah Reader Baru",
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                      itemCount: 10,
-                      itemBuilder: (context, index) => const ListReaderWidget(),
-                      separatorBuilder: (context, index) => const SizedBox(
-                            height: 10,
-                          )),
-                ],
+                    FutureBuilder(
+                        future: _futureDataReader,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                              child: LoadingListTransactionsWidget(
+                                  mediaQueryWidth: mediaQueryWidth),
+                            );
+                          } else {
+                            if (snapshot.data!.status) {
+                              return Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                                  child: ListView.separated(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: snapshot.data!.data!.length,
+                                      itemBuilder: (context, index) =>
+                                          ListReaderWidget(
+                                            idHardware: snapshot
+                                                .data!.data![index].id_hardware,
+                                            nameReader: snapshot
+                                                .data!.data![index].name,
+                                            isActive: snapshot
+                                                .data!.data![index].is_active,
+                                            snReader: snapshot
+                                                .data!.data![index].sn_sensor,
+                                            updatedAt: snapshot
+                                                .data!.data![index].updated_at,
+                                          ),
+                                      separatorBuilder: (context, index) =>
+                                          const SizedBox(
+                                            height: 10,
+                                          )));
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Lottie.asset(
+                                        'assets/img/lottie/no_transaction.json',
+                                        width: 200),
+                                    Text(
+                                      "Belum Ada Mesin Reader!",
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }
+                        })
+                  ],
+                ),
               ),
             ),
           )
         ]),
-      ),
-    );
-  }
-}
-
-class ListReaderWidget extends StatelessWidget {
-  const ListReaderWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2.5),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.grey.shade300),
-          color: Colors.blue.shade100),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Reader 1234567890",
-                            style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                          Text(
-                            "Nyala",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          IconAppbarCustomWidget(
-                            iconType: Icons.power_settings_new,
-                            functionTap: () async {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          IconAppbarCustomWidget(
-                            iconType: Iconsax.trash,
-                            functionTap: () async {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
