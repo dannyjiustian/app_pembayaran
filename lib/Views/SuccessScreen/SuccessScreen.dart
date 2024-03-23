@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
-import '../Home/HomeScreen.dart';
 import '../Widget/ButtonWidget.dart';
 
 class SuccessScreen extends StatelessWidget {
@@ -42,14 +40,16 @@ class SuccessScreen extends StatelessWidget {
     final bodyHeight = mediaQueryHeight -
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top;
-    return MaterialApp(
-      title: "Success Screen",
-      theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(
-          Theme.of(context).textTheme,
-        ),
-      ),
-      home: Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
+        refreshToken!();
+        Navigator.of(context).pop();
+      },
+      child: Scaffold(
         appBar: appBar,
         body: Center(
           child: Padding(
@@ -66,7 +66,7 @@ class SuccessScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          "Selamat Telah Melakukan ${typeDetect == 1 ? "Top Up!" : typeDetect == 2 ? "Daftar Kartu!" : "lain"}",
+                          "Selamat Telah Melakukan ${typeDetect == 1 ? "Top Up!" : typeDetect == 2 ? "Daftar Kartu!" : typeDetect == 3 ? "Penarikan Dana" : "lain"}",
                           style: GoogleFonts.poppins(
                               fontSize: 20, fontWeight: FontWeight.w600),
                           textAlign: TextAlign.center,
@@ -76,7 +76,9 @@ class SuccessScreen extends StatelessWidget {
                               ? "Saldo berhasil ditambahkan keakunmu, silakan kembali ke home untuk mengeceknya!"
                               : typeDetect == 2
                                   ? "Kartu Baru berhasil didaftarkan ke akun kamu!"
-                                  : "lainnya",
+                                  : typeDetect == 3
+                                      ? "Penarikan Dana telah berhasil!"
+                                      : "lainnya",
                           style: GoogleFonts.poppins(
                               fontSize: 14, color: Colors.grey.shade500),
                           textAlign: TextAlign.center,
@@ -86,7 +88,9 @@ class SuccessScreen extends StatelessWidget {
                               ? "Untuk Melihat detail transaksi dapat ke menuu history."
                               : typeDetect == 2
                                   ? "Kembali ke Home untuk melihat kartu!"
-                                  : "lainnya",
+                                  : typeDetect == 3
+                                      ? "Saldo telah terpotong, lihat di home!"
+                                      : "lainnya",
                           style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: Colors.grey.shade500,
