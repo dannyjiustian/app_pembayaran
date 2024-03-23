@@ -167,14 +167,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      HomeScreen(navigatorKey: widget.navigatorKey,)));
+                                                      HomeScreen(
+                                                        navigatorKey:
+                                                            widget.navigatorKey,
+                                                      )));
                                           break;
                                         case '2':
                                           Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      HomeScreenOutlet()));
+                                                      HomeScreenOutlet(
+                                                        navigatorKey:
+                                                            widget.navigatorKey,
+                                                      )));
                                           break;
                                         case '3':
                                           Navigator.pushReplacement(
@@ -188,7 +194,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      HomeScreen(navigatorKey: widget.navigatorKey,))); // Default value
+                                                      HomeScreen(
+                                                        navigatorKey:
+                                                            widget.navigatorKey,
+                                                      ))); // Default value
                                       }
                                     } else {
                                       AlertWidget(
@@ -219,7 +228,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ResetScreen(navigatorKey: widget.navigatorKey,)));
+                                      builder: (context) => ResetScreen(
+                                            navigatorKey: widget.navigatorKey,
+                                          )));
                             },
                             child: Ink(
                               child: Text(
@@ -252,7 +263,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => RegisterScreen(navigatorKey: widget.navigatorKey,)));
+                                builder: (context) => RegisterScreen(
+                                      navigatorKey: widget.navigatorKey,
+                                    )));
                       },
                       child: Ink(
                         child: Text(
