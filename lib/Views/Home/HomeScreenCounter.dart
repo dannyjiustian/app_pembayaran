@@ -152,8 +152,8 @@ class _HomeScreenCounterState extends State<HomeScreenCounter> {
                             colorSetBody: Colors.blue.shade100,
                             colorSetText: Colors.black,
                             functionTap: () => {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => ListReaderScreen()))
+                                  // Navigator.of(context).push(MaterialPageRoute(
+                                  //     builder: (context) => ListReaderScreen()))
                                 }),
                       ],
                     ),
