@@ -195,6 +195,7 @@ class _HomeScreenState extends State<HomeScreen>
               ? RefreshIndicator(
                   onRefresh: refreshData,
                   child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     child: Column(
                       children: [
