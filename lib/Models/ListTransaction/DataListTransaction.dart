@@ -4,13 +4,13 @@ part 'DataListTransaction.g.dart';
 
 @JsonSerializable()
 class DataListTransaction {
-  final String id_transaction, id_card, id_user, updated_at, status;
-  final String? txn_hash, id_hardware, id_outlet;
+  final String id_transaction, id_user, updated_at, status;
+  final String? id_card, txn_hash, id_hardware, id_outlet;
   final int total_payment, type;
 
   DataListTransaction({
     required this.id_transaction,
-    required this.id_card,
+    this.id_card,
     required this.id_user,
     this.id_hardware,
     this.id_outlet,
