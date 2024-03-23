@@ -9,11 +9,13 @@ String formatToRupiah(int balance, {int? type}) {
   }
   parts.add(formattedBalance);
 
-  String text = (type == 0)
+  String text = type == 0
       ? "-Rp. "
-      : (type == 1)
+      : type == 1
           ? "+Rp. "
-          : "Rp. ";
+          : type == 2
+              ? "-Rp. "
+              : "Rp. ";
 
   return "${text}${parts.reversed.join('.')}";
 }
