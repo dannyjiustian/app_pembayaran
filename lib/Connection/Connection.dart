@@ -7,9 +7,12 @@ import '../Models/CheckRfid/CheckRfid.dart';
 import '../Models/DetailTransaction/DetailTransaction.dart';
 import '../Models/ListCard/Card.dart';
 import '../Models/ListCard/ListCard.dart';
+import '../Models/ListReader/ListReader.dart';
 import '../Models/ListTransaction/ListTransaction.dart';
+import '../Models/OutletData/OutletData.dart';
 import '../Models/TokenJWT/TokenJWT.dart';
 import '../Models/UpdateCard/UpdateCard.dart';
+import '../Models/UpdateReader/UpdateReader.dart';
 
 class Connection {
   final String url = "http://192.168.100.75:3000/api/v1/";
@@ -418,6 +421,130 @@ class Connection {
           (json.decode('{"status": false, "message": "${e.toString()}"}')
               as Map<String, dynamic>);
       return Card.fromJson(data);
+    }
+  }
+
+  Future getOutletByIDUser(String token, String id_user) async {
+    try {
+      Uri uri = Uri.parse("${url}outlet/id-user/${id_user}");
+      final response = await http.get(
+        uri,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return OutletData.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return getOutletByIDUser(newToken, id_user);
+        } else {
+          return OutletData(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return OutletData.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return OutletData.fromJson(data);
+    }
+  }
+
+  Future updateOutlet(String token, String id_outlet, String balance) async {
+    try {
+      Uri uri = Uri.parse("${url}outlet/$id_outlet/update");
+      final response = await http.put(
+        uri,
+        body: {
+          "balance": balance,
+        },
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return UpdateCard.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return updateOutlet(newToken, id_outlet, balance);
+        } else {
+          return UpdateCard(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return UpdateCard.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return UpdateCard.fromJson(data);
+    }
+  }
+
+  Future getReaderByIDUser(String token, String id_user) async {
+    try {
+      Uri uri = Uri.parse("${url}hardware/id-user/${id_user}");
+      final response = await http.get(
+        uri,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return ListReader.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return getReaderByIDUser(newToken, id_user);
+        } else {
+          return ListReader(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return ListReader.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return ListReader.fromJson(data);
+    }
+  }
+
+  Future updateReader(String token, String id_hardware, Object body) async {
+    try {
+      Uri uri = Uri.parse("${url}hardware/$id_hardware/update");
+      final response = await http.put(
+        uri,
+        body: body,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return UpdateReader.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return updateReader(newToken, id_hardware, body);
+        } else {
+          return UpdateReader(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return UpdateReader.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return UpdateReader.fromJson(data);
     }
   }
 }
