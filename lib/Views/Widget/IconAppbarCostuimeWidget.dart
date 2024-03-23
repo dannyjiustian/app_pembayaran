@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 
 class IconAppbarCustomWidget extends StatelessWidget {
-  IconAppbarCustomWidget(
-      {super.key, required this.iconType, required this.functionTap});
+  IconAppbarCustomWidget({
+    super.key,
+    required this.iconType,
+    required this.functionTap,
+    this.backgroundColor,
+    this.iconColor,
+  });
 
   final IconData iconType;
   final Function() functionTap;
+  final Color? backgroundColor, iconColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50), color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(50),
+        color: backgroundColor ?? Colors.grey.shade300,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: InkWell(
@@ -20,6 +28,7 @@ class IconAppbarCustomWidget extends StatelessWidget {
             child: Icon(
               iconType,
               size: 20,
+              color: iconColor ?? Colors.black,
             ),
           ),
         ),
