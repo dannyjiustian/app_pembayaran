@@ -584,6 +584,18 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                       'assets/img/gif/delete.gif',
                                                   confirmBtnColor: Colors.red,
                                                   onConfirmBtnTap: () async {
+                                                    Navigator.of(contextFuture,
+                                                            rootNavigator: true)
+                                                        .pop();
+                                                    QuickAlert.show(
+                                                      context: contextFuture,
+                                                      type: QuickAlertType
+                                                          .loading,
+                                                      title: 'Loading',
+                                                      text:
+                                                          'Proses Batalkan Transaksi, Mohon Tunggu!',
+                                                      barrierDismissible: false,
+                                                    );
                                                     var res = await conn
                                                         .cancelTransaction(
                                                             accessToken!,
