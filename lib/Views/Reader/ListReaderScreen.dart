@@ -230,8 +230,16 @@ class _ListReaderScreenState extends State<ListReaderScreen> {
                                                 .data!.data![index].is_active,
                                             snReader: snapshot
                                                 .data!.data![index].sn_sensor,
+                                            createdAt: snapshot
+                                                .data!.data![index].created_at,
                                             updatedAt: snapshot
                                                 .data!.data![index].updated_at,
+                                            transactionLength: snapshot
+                                                .data!
+                                                .data![index]
+                                                .transactions
+                                                .length,
+                                            refreshData: refreshData,
                                           ),
                                       separatorBuilder: (context, index) =>
                                           const SizedBox(
