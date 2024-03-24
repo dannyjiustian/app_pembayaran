@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/Auth/Login.dart';
 import '../Models/CheckRfid/CheckRfid.dart';
-import '../Models/DataTransaction/DataTransaction.dart';
 import '../Models/DetailTransaction/DetailTransaction.dart';
 import '../Models/ListCard/Card.dart';
 import '../Models/ListCard/ListCard.dart';
