@@ -54,8 +54,6 @@ dependencies:
   qr_code_scanner: ^1.0.1
   vibration: ^1.8.4
   async: ^2.10.0
-  rfid: ^0.0.28
-  pda_rfid_scanner: ^0.0.2+1
   nfc_manager: ^3.4.0
   lottie: ^3.0.0
   dart_jsonwebtoken: ^2.13.0
@@ -63,6 +61,7 @@ dependencies:
   dotted_line: ^3.2.2
   fluttertoast: ^8.2.4
   quickalert: ^1.1.0
+  network_info_plus: ^3.0.1
 
 dev_dependencies:
   flutter_test:
