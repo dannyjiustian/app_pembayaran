@@ -2,7 +2,6 @@ import 'package:app_pembayaran/Function/formatDateOnly.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -109,7 +108,7 @@ class _ListReaderWidgetState extends State<ListReaderWidget> {
                                 type: QuickAlertType.custom,
                                 barrierDismissible: true,
                                 confirmBtnText: 'Simpan Perubahan',
-                                customAsset: 'assets/img/gif/questions.gif',
+                                customAsset: 'assets/img/gif/info.gif',
                                 widget: Column(
                                   children: [
                                     Row(
@@ -247,12 +246,22 @@ class _ListReaderWidgetState extends State<ListReaderWidget> {
                                 type: QuickAlertType.confirm,
                                 title: "Kamu Yakin?",
                                 text:
-                                    "${isActive ? "Matikan" : "Hidukan"} Reader",
+                                    "${isActive ? "Matikan" : "Hidupkan"} Reader",
                                 cancelBtnText: 'Tidak',
                                 confirmBtnText: 'Iya',
                                 customAsset: 'assets/img/gif/questions.gif',
                                 confirmBtnColor: Colors.indigo.shade500,
                                 onConfirmBtnTap: () async {
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop();
+                                  QuickAlert.show(
+                                    context: context,
+                                    type: QuickAlertType.loading,
+                                    title: 'Loading',
+                                    text:
+                                        'Proses ${isActive ? "Matikan" : "Hidupkan"} Reader, Mohon Tunggu!',
+                                    barrierDismissible: false,
+                                  );
                                   UpdateReaderString data = UpdateReaderString(
                                       is_active: isActive ? "false" : "true");
                                   var res = await conn.updateReader(
@@ -266,7 +275,7 @@ class _ListReaderWidgetState extends State<ListReaderWidget> {
                                       context: context,
                                       type: QuickAlertType.success,
                                       title: "Berhasil",
-                                      text: "Status diubah",
+                                      text: "Status Reader diubah",
                                       barrierDismissible: false,
                                     ).then((value) {
                                       setState(() {
