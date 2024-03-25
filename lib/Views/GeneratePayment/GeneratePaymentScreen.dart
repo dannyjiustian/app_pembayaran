@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:lottie/lottie.dart';
 
 import '../SuccessScreen/SuccessScreen.dart';
 import '../Widget/ButtonWidget.dart';
@@ -79,11 +80,8 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                 ],
               ),
             ),
-            SvgPicture.asset(
-              "assets/img/shop.svg",
-              width: 250,
-            ),
-            SizedBox(
+            Lottie.asset('assets/img/lottie/shopping.json', width: 300),
+            const SizedBox(
               height: 30,
             ),
             Padding(
@@ -100,8 +98,11 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                         nameController: amount,
                         label: "Jumlah Pembayaran",
                         obscureCondition: false,
-                        keyboardNext: true,
-                        keyboard: false,
+                        keyboardNext: false,
+                        keyboard: true,
+                        keyboardType: true,
+                        typeInput: TextInputType.number,
+                        formatRupiah: true,
                       ),
                       const SizedBox(
                         height: 20,
