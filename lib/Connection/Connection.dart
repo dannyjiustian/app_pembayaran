@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/Auth/Login.dart';
 import '../Models/CheckRfid/CheckRfid.dart';
+import '../Models/CreateRaader/DataReader.dart';
 import '../Models/DetailTransaction/DetailTransaction.dart';
 import '../Models/ListCard/Card.dart';
 import '../Models/ListCard/ListCard.dart';
@@ -551,7 +552,7 @@ class Connection {
   Future deleteHardware(String token, String id_hardware) async {
     try {
       Uri uri = Uri.parse("${url}hardware/${id_hardware}");
-      final response = await http.delete(
+      final response = await http.post(
         uri,
         headers: _setHeaders(token),
       );
@@ -575,6 +576,37 @@ class Connection {
           (json.decode('{"status": false, "message": "${e.toString()}"}')
               as Map<String, dynamic>);
       return UpdateReader.fromJson(data);
+    }
+  }
+
+  Future createHardware(String token, Object body) async {
+    try {
+      Uri uri = Uri.parse("${url}hardware/save");
+      final response = await http.post(
+        uri,
+        body: body,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>); 
+      if (response.statusCode == 200) {
+        return DataReader.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return createHardware(newToken, body);
+        } else {
+          return DataReader(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return DataReader.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return DataReader.fromJson(data);
     }
   }
 }
