@@ -159,9 +159,12 @@ class _ListReaderScreenState extends State<ListReaderScreen> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 3),
                       child: InkWell(
-                        onTap: () {
+                        onTap: () async {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => FormPairScreen()));
+                              builder: (context) => FormPairScreen(
+                                    refreshToken: widget.refreshToken,
+                                    refreshCallback: refreshData,
+                                  )));
                         },
                         child: DottedBorder(
                           borderType: BorderType.RRect,
