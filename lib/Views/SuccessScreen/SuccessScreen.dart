@@ -11,10 +11,11 @@ class SuccessScreen extends StatelessWidget {
     super.key,
     required this.typeDetect,
     this.refreshToken,
+    this.refreshCallback,
   });
 
   final int typeDetect;
-  final VoidCallback? refreshToken;
+  final VoidCallback? refreshToken, refreshCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +48,7 @@ class SuccessScreen extends StatelessWidget {
           return;
         }
         refreshToken!();
+        refreshCallback!();
         Navigator.of(context).pop();
       },
       child: Scaffold(
@@ -61,12 +63,12 @@ class SuccessScreen extends StatelessWidget {
                   height: bodyHeight * 0.5,
                   child: Lottie.asset('assets/img/lottie/success.json'),
                 ),
-                Container(
+                SizedBox(
                     height: bodyHeight * 0.3,
                     child: Column(
                       children: [
                         Text(
-                          "Selamat Telah Melakukan ${typeDetect == 1 ? "Top Up!" : typeDetect == 2 ? "Daftar Kartu!" : typeDetect == 3 ? "Penarikan Dana" : "lain"}",
+                          "Selamat Telah Melakukan ${typeDetect == 1 ? "Top Up!" : typeDetect == 2 ? "Daftar Kartu!" : typeDetect == 3 ? "Penarikan Dana" : typeDetect == 4 ? "Pairing Perangkat" : "lain"}",
                           style: GoogleFonts.poppins(
                               fontSize: 20, fontWeight: FontWeight.w600),
                           textAlign: TextAlign.center,
@@ -78,7 +80,9 @@ class SuccessScreen extends StatelessWidget {
                                   ? "Kartu Baru berhasil didaftarkan ke akun kamu!"
                                   : typeDetect == 3
                                       ? "Penarikan Dana telah berhasil!"
-                                      : "lainnya",
+                                      : typeDetect == 4
+                                          ? "Perangkat Baru Telah Terkoneksi dan Tersimpan diakun!"
+                                          : "lainnya",
                           style: GoogleFonts.poppins(
                               fontSize: 14, color: Colors.grey.shade500),
                           textAlign: TextAlign.center,
@@ -90,7 +94,9 @@ class SuccessScreen extends StatelessWidget {
                                   ? "Kembali ke Home untuk melihat kartu!"
                                   : typeDetect == 3
                                       ? "Saldo telah terpotong, lihat di home!"
-                                      : "lainnya",
+                                      : typeDetect == 4
+                                          ? "Silakan Lihat Datanya di menu daftar reader!"
+                                          : "lainnya",
                           style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: Colors.grey.shade500,
@@ -99,7 +105,7 @@ class SuccessScreen extends StatelessWidget {
                         ),
                       ],
                     )),
-                Container(
+                SizedBox(
                   height: bodyHeight * 0.2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -110,6 +116,7 @@ class SuccessScreen extends StatelessWidget {
                         colorSetText: Colors.white,
                         functionTap: () {
                           refreshToken!();
+                          refreshCallback!();
                           Navigator.of(context).pop();
                         },
                       ),
