@@ -212,6 +212,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                             colorSetText: Colors.white,
                             functionTap: () async {
                               FocusScope.of(context).unfocus();
+                              FocusManager.instance.primaryFocus?.unfocus();
                               if (_formKey.currentState!.validate()) {
                                 int amountValue =
                                     int.parse(amount.text.replaceAll(".", ""));
@@ -230,6 +231,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
 
                                 CreateTransaction data = CreateTransaction(
                                     id_user: jwtData!.id_user,
+                                    id_outlet: widget.idOutlet,
                                     type: "2",
                                     total_payment:
                                         amount.text.replaceAll(".", ""),
