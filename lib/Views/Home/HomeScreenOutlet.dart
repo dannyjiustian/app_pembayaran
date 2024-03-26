@@ -49,6 +49,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
       _futureDataTransactionFinish,
       _futureDataTransactionOnProcess;
   late TabController _tabController;
+  String? idOutlet;
 
   Future checkLocalStorage() async {
     final pref = await SharedPreferences.getInstance();
@@ -86,27 +87,36 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
     OutletData data =
         await conn.getOutletByIDUser(accessToken!, jwtData!.id_user);
     detectAndRefreshData(data);
+    setState(() {
+      idOutlet = data.data!.id_outlet;
+    });
     return data;
   }
 
   Future<ListTransaction> fetchDataLastTransaction() async {
+    while (idOutlet == null) {
+      // Wait for a short duration before checking again
+      await Future.delayed(Duration(milliseconds: 500));
+    }
     ListTransaction data = await conn.getTransasctionByIDUser(
         accessToken!, jwtData!.id_user,
-        status: true, take: 5);
+        status: true, take: 5, id_outlet: idOutlet);
     detectAndRefreshData(data);
     return data;
   }
 
   Future<ListTransaction> fetchDataTransactionFinish() async {
-    ListTransaction data = await conn
-        .getTransasctionByIDUser(accessToken!, jwtData!.id_user, status: true);
+    ListTransaction data = await conn.getTransasctionByIDUser(
+        accessToken!, jwtData!.id_user,
+        status: true, id_outlet: idOutlet);
     detectAndRefreshData(data);
     return data;
   }
 
   Future<ListTransaction> fetchDataTransactionOnProcess() async {
-    ListTransaction data = await conn
-        .getTransasctionByIDUser(accessToken!, jwtData!.id_user, status: false);
+    ListTransaction data = await conn.getTransasctionByIDUser(
+        accessToken!, jwtData!.id_user,
+        status: false, id_outlet: idOutlet);
     detectAndRefreshData(data);
     return data;
   }
@@ -457,7 +467,8 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       ListReaderScreen(
-                                                        navigatorKey: widget.navigatorKey,
+                                                        navigatorKey:
+                                                            widget.navigatorKey,
                                                         refreshToken:
                                                             refreshToken,
                                                         typeDetect: 3,
@@ -474,7 +485,11 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const GeneratePaymentScreen()))
+                                                      GeneratePaymentScreen(
+                                                        refreshToken: refreshToken,
+                                                        idOutlet:
+                                                            idOutlet.toString(),
+                                                      )))
                                         }),
                               ],
                             ),
@@ -532,6 +547,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                               snapshot.data!.data!.length,
                                           itemBuilder: (context, index) =>
                                               CardListTransactionWidget(
+                                                  role: jwtData!.role,
                                                   navigatorKey:
                                                       widget.navigatorKey,
                                                   refreshToken: refreshToken,
@@ -626,6 +642,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                                 snapshot.data!.data!.length,
                                             itemBuilder: (context, index) =>
                                                 CardListTransactionWidget(
+                                                    role: jwtData!.role,
                                                     navigatorKey:
                                                         widget.navigatorKey,
                                                     refreshToken: refreshToken,
@@ -703,6 +720,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                                 snapshot.data!.data!.length,
                                             itemBuilder: (context, index) =>
                                                 CardListTransactionWidget(
+                                                    role: jwtData!.role,
                                                     navigatorKey:
                                                         widget.navigatorKey,
                                                     refreshToken: refreshToken,
