@@ -103,7 +103,7 @@ class _DetectCardScreenState extends State<DetectCardScreen> {
         if (isNfcAvailable) {
           await NfcManager.instance.stopSession();
         }
-        widget.refreshToken!();
+        widget.refreshToken?.call();
         Navigator.of(context).pop();
       },
       child: Scaffold(
@@ -123,7 +123,7 @@ class _DetectCardScreenState extends State<DetectCardScreen> {
                       if (isNfcAvailable) {
                         await NfcManager.instance.stopSession();
                       }
-                      widget.refreshToken!();
+        widget.refreshToken?.call();
                       Navigator.of(context).pop();
                     },
                   ),
