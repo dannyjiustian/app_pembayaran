@@ -117,7 +117,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
         if (didPop) {
           return;
         }
-        widget.refreshToken!();
+        widget.refreshToken?.call();
         Navigator.of(context).pop();
       },
       child: Scaffold(
@@ -215,6 +215,26 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                Text("Tipe Transaksi",
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600)),
+                                Text(
+                                    snapshot.data!.data!.type == 0
+                                        ? "Pembayaran"
+                                        : snapshot.data!.data!.type == 1
+                                            ? "Top Up"
+                                            : snapshot.data!.data!.type == 2
+                                                ? "Penarikan Dana"
+                                                : "",
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
                                 Text("ID Transaksi",
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
@@ -307,9 +327,11 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                         ],
                                       ))
                                     : Text(
-                                        snapshot.data!.data!.type == 2
-                                            ? "Penarikan Dana"
-                                            : "",
+                                        snapshot.data!.data!.type == 0
+                                            ? "Pembayaran ${snapshot.data!.data!.status}"
+                                            : snapshot.data!.data!.type == 2
+                                                ? "Penarikan Dana"
+                                                : "",
                                         style: GoogleFonts.poppins(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600))
@@ -364,11 +386,13 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                         ],
                                       ))
                                     : Text(
-                                        snapshot.data!.data!.type == 1
-                                            ? "Transaksi NFC"
-                                            : snapshot.data!.data!.type == 2
-                                                ? "Penarikan Dana"
-                                                : "",
+                                        snapshot.data!.data!.type == 0
+                                            ? "Pembayaran ${snapshot.data!.data!.status}"
+                                            : snapshot.data!.data!.type == 1
+                                                ? "Transaksi NFC"
+                                                : snapshot.data!.data!.type == 2
+                                                    ? "Penarikan Dana"
+                                                    : "",
                                         style: GoogleFonts.poppins(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600))
@@ -573,7 +597,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                               colorSetText: Colors.white,
                                               functionTap: () async {
                                                 QuickAlert.show(
-                                                  context: context,
+                                                  context: contextFuture,
                                                   type: QuickAlertType.confirm,
                                                   title: "Kamu Yakin?",
                                                   text:
@@ -616,8 +640,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                         barrierDismissible:
                                                             false,
                                                       ).then((value) {
-                                                        widget
-                                                            .refreshCallback!();
+                                                        widget.refreshCallback
+                                                            ?.call();
                                                         Navigator.of(context)
                                                             .pop();
                                                       });
