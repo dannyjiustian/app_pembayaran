@@ -438,6 +438,7 @@ class _HomeScreenState extends State<HomeScreen>
                                               snapshot.data!.data!.length,
                                           itemBuilder: (context, index) =>
                                               CardListTransactionWidget(
+                                                  role: jwtData!.role,
                                                   navigatorKey:
                                                       widget.navigatorKey,
                                                   refreshToken: refreshToken,
@@ -532,6 +533,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 snapshot.data!.data!.length,
                                             itemBuilder: (context, index) =>
                                                 CardListTransactionWidget(
+                                                    role: jwtData!.role,
                                                     navigatorKey:
                                                         widget.navigatorKey,
                                                     refreshToken: refreshToken,
@@ -609,6 +611,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 snapshot.data!.data!.length,
                                             itemBuilder: (context, index) =>
                                                 CardListTransactionWidget(
+                                                    role: jwtData!.role,
                                                     navigatorKey:
                                                         widget.navigatorKey,
                                                     refreshToken: refreshToken,
