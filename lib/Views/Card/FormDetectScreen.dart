@@ -98,7 +98,7 @@ class _FormDetectScreenState extends State<FormDetectScreen> {
         if (isNfcAvailable) {
           await NfcManager.instance.stopSession();
         }
-        widget.refreshToken!();
+        widget.refreshToken?.call();
         Navigator.of(context).pop();
       },
       child: Scaffold(
@@ -119,7 +119,7 @@ class _FormDetectScreenState extends State<FormDetectScreen> {
                       if (isNfcAvailable) {
                         await NfcManager.instance.stopSession();
                       }
-                      widget.refreshToken!();
+                      widget.refreshToken?.call();
                       Navigator.of(context).pop();
                     },
                   ),
@@ -177,6 +177,8 @@ class _FormDetectScreenState extends State<FormDetectScreen> {
                                         colorSetText: Colors.white,
                                         functionTap: () async {
                                           FocusScope.of(context).unfocus();
+                                          FocusManager.instance.primaryFocus
+                                              ?.unfocus();
                                           if (_formKey.currentState!
                                               .validate()) {
                                             setState(() {
