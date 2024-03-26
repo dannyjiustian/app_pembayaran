@@ -197,7 +197,7 @@ class Connection {
   }
 
   Future getTransasctionByIDUser(String token, String id_user,
-      {int? take, bool? status}) async {
+      {int? take, bool? status, String? id_outlet}) async {
     try {
       String urlQuery = "${url}transaction/id-user/$id_user";
 
@@ -206,6 +206,11 @@ class Connection {
         if (status != null) urlQuery += "&status=$status";
       } else if (status != null) {
         urlQuery += "?status=$status";
+      }
+      if (id_outlet != null) {
+        urlQuery += urlQuery.contains("?")
+            ? "&id_outlet=$id_outlet"
+            : "?id_outlet=$id_outlet";
       }
       Uri uri = Uri.parse(urlQuery);
       final response = await http.get(
@@ -588,7 +593,7 @@ class Connection {
         headers: _setHeaders(token),
       );
       Map<String, dynamic> data =
-          (json.decode(response.body) as Map<String, dynamic>); 
+          (json.decode(response.body) as Map<String, dynamic>);
       if (response.statusCode == 200) {
         return DataReader.fromJson(data);
       } else if (response.statusCode == 401) {
