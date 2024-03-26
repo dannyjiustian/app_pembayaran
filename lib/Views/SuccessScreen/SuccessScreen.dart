@@ -47,8 +47,8 @@ class SuccessScreen extends StatelessWidget {
         if (didPop) {
           return;
         }
-        refreshToken!();
-        refreshCallback!();
+        refreshToken?.call();
+        refreshCallback?.call();
         Navigator.of(context).pop();
       },
       child: Scaffold(
@@ -115,8 +115,8 @@ class SuccessScreen extends StatelessWidget {
                         colorSetBody: Colors.blue,
                         colorSetText: Colors.white,
                         functionTap: () {
-                          refreshToken!();
-                          refreshCallback!();
+                          refreshToken?.call();
+                          refreshCallback?.call();
                           Navigator.of(context).pop();
                         },
                       ),
