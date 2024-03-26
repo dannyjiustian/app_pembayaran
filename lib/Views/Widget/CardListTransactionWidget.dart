@@ -16,6 +16,7 @@ class CardListTransactionWidget extends StatelessWidget {
     required this.idTransaction,
     required this.status,
     required this.navigatorKey,
+    required this.role,
     this.refreshToken,
     this.refreshCallback,
   });
@@ -23,7 +24,7 @@ class CardListTransactionWidget extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   final double mediaQueryWidth;
   final int type, totalPayment;
-  final String updatedAt, idTransaction, status;
+  final String updatedAt, idTransaction, status, role;
   final VoidCallback? refreshToken, refreshCallback;
 
   @override
@@ -108,7 +109,9 @@ class CardListTransactionWidget extends StatelessWidget {
                             ),
                             Text(
                               type == 0
-                                  ? "Uang Keluar"
+                                  ? role == "1"
+                                      ? "Uang Keluar"
+                                      : "Uang Masuk"
                                   : (type == 1)
                                       ? "Uang Masuk"
                                       : type == 2
