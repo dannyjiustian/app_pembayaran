@@ -62,6 +62,7 @@ dependencies:
   fluttertoast: ^8.2.4
   quickalert: ^1.1.0
   network_info_plus: ^3.0.1
+  mqtt_client: ^10.2.0
 
 dev_dependencies:
   flutter_test:
