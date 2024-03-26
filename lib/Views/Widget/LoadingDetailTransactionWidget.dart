@@ -31,6 +31,13 @@ class LoadingDetailTransactionWidget extends StatelessWidget {
           const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                BlankContainerWidget(width: 70, height: 15),
+                BlankContainerWidget(width: 50, height: 15),
+              ]),
+          const SizedBox(height: 10),
+          const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 BlankContainerWidget(width: 50, height: 15),
                 BlankContainerWidget(width: 75, height: 15),
               ]),
