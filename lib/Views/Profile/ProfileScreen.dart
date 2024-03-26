@@ -105,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (didPop) {
           return;
         }
-        widget.refreshToken!();
+        widget.refreshToken();
         Navigator.of(context).pop();
       },
       child: Scaffold(
@@ -183,6 +183,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     colorSetText: Colors.white,
                                     functionTap: () async {
                                       FocusScope.of(context).unfocus();
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
                                       if (_formKey.currentState!.validate()) {
                                         SharedPreferences localStorage =
                                             await SharedPreferences
