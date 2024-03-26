@@ -58,7 +58,7 @@ class _ListReaderScreenState extends State<ListReaderScreen> {
                 navigatorKey: widget.navigatorKey,
               )));
     }
-    widget.refreshToken!();
+    widget.refreshToken?.call();
   }
 
   Future<ListReader> fetchDataReader() async {
@@ -119,7 +119,7 @@ class _ListReaderScreenState extends State<ListReaderScreen> {
         if (didPop) {
           return;
         }
-        widget.refreshToken!();
+        widget.refreshToken?.call();
         Navigator.of(context).pop();
       },
       child: Scaffold(
@@ -133,7 +133,7 @@ class _ListReaderScreenState extends State<ListReaderScreen> {
                 IconAppbarCustomWidget(
                   iconType: Iconsax.arrow_left_2,
                   functionTap: () async {
-                    widget.refreshToken!();
+                    widget.refreshToken?.call();
                     Navigator.of(context).pop();
                   },
                 ),
