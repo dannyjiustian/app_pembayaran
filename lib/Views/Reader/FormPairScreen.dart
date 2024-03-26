@@ -251,6 +251,8 @@ class _FormPairScreenState extends State<FormPairScreen> {
                                     colorSetText: Colors.white,
                                     functionTap: () async {
                                       FocusScope.of(context).unfocus();
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
                                       if (_formKey.currentState!.validate()) {
                                         QuickAlert.show(
                                           context: context,
