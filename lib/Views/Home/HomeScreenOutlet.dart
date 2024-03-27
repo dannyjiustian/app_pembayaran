@@ -486,9 +486,11 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       GeneratePaymentScreen(
-                                                        refreshToken: refreshToken,
+                                                        refreshToken:
+                                                            refreshToken,
                                                         idOutlet:
                                                             idOutlet.toString(),
+                                                        typeAction: 1,
                                                       )))
                                         }),
                               ],
@@ -858,7 +860,21 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                             SharedPreferences localStorage =
                                                 await SharedPreferences
                                                     .getInstance();
-                                            await localStorage.clear();
+                                            List<String> keysToKeep = [
+                                              'OnBoarding'
+                                            ]; // Tentukan kunci data yang ingin dipertahankan
+
+                                            Set<String> keys =
+                                                localStorage.getKeys();
+                                            for (String key in keys) {
+                                              // Periksa apakah kunci data perlu dihapus
+                                              if (!keysToKeep.contains(key)) {
+                                                await localStorage.remove(key);
+                                              }
+                                            }
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop();
                                             Navigator.pushReplacement(
                                                 context,
                                                 MaterialPageRoute(
