@@ -80,6 +80,16 @@ class MQTTClientWrapper {
     });
   }
 
+  void _publishMessage(String message) {
+    final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
+    builder.addString(message);
+
+    print(
+        'Publishing message "$message" to topic ${'Dart/Mqtt_client/testtopic'}');
+    client.publishMessage(
+        'Dart/Mqtt_client/testtopic', MqttQos.exactlyOnce, builder.payload!);
+  }
+
   void _onSubscribed(String topic) {
     print('Subscription confirmed for topic $topic');
     subscriptionState = MqttSubscriptionState.SUBSCRIBED;
