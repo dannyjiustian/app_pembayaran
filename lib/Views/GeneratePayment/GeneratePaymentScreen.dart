@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,10 +22,14 @@ import '../Widget/TextFieldInputWidget.dart';
 
 class GeneratePaymentScreen extends StatefulWidget {
   GeneratePaymentScreen(
-      {super.key, required this.idOutlet, required this.refreshToken});
+      {super.key,
+      required this.idOutlet,
+      required this.refreshToken,
+      required this.typeAction});
 
   final String idOutlet;
   final VoidCallback refreshToken;
+  final int typeAction;
 
   @override
   State<GeneratePaymentScreen> createState() => _GeneratePaymentScreenState();
@@ -86,7 +91,9 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
         if (didPop) {
           return;
         }
-        mqttClient.client.disconnect();
+        try {
+          mqttClient.client.disconnect();
+        } catch (e) {}
         widget.refreshToken();
         Navigator.of(context).pop();
       },
@@ -102,6 +109,9 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                   IconAppbarCustomWidget(
                     iconType: Iconsax.arrow_left_2,
                     functionTap: () async {
+                      try {
+                        mqttClient.client.disconnect();
+                      } catch (e) {}
                       widget.refreshToken();
                       Navigator.of(context).pop();
                     },
@@ -117,7 +127,9 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                 ],
               ),
             ),
-            Lottie.asset('assets/img/lottie/shopping.json', width: 300),
+            Lottie.asset(
+                'assets/img/lottie/${widget.typeAction == 1 ? "shopping" : "topup"}.json',
+                width: widget.typeAction == 1 ? 300 : 200),
             const SizedBox(
               height: 30,
             ),
@@ -133,7 +145,8 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                     children: [
                       TextFieldInputWidget(
                         nameController: amount,
-                        label: "Jumlah Pembayaran",
+                        label:
+                            "Jumlah ${widget.typeAction == 1 ? "Pembayaran" : "Top Up"}",
                         obscureCondition: false,
                         keyboardNext: false,
                         keyboard: true,
@@ -145,7 +158,8 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                         height: 20,
                       ),
                       ButtonWidget(
-                        buttonText: "Proses Pembayaran",
+                        buttonText:
+                            "Proses ${widget.typeAction == 1 ? "Pembayaran" : "Top Up"}",
                         colorSetBody: Colors.blue,
                         colorSetText: Colors.white,
                         functionTap: () async {
@@ -162,7 +176,7 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                             CreateTransaction data = CreateTransaction(
                                 id_user: jwtData!.id_user,
                                 id_outlet: widget.idOutlet,
-                                type: "0",
+                                type: widget.typeAction == 1 ? "0" : "1",
                                 total_payment: amount.text.replaceAll(".", ""));
                             var res = await conn.createTransaction(
                                 accessToken!, data.toJson());
@@ -203,7 +217,7 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                                   Fluttertoast.showToast(
                                     msg: dataMqttRes.message ==
                                             "Hardware Not Found"
-                                        ? 'Status Reader Sedang Mati!'
+                                        ? 'Status Reader Sedang Mati / Tidak Terdaftar!'
                                         : dataMqttRes.message ==
                                                 "Card Not Found"
                                             ? 'Kartu Tidak Terdaftar!'
