@@ -23,16 +23,18 @@ import '../Widget/IconAppbarCostuimeWidget.dart';
 import '../Widget/LoadingDetailTransactionWidget.dart';
 
 class DetailTransaksiScreen extends StatefulWidget {
-  const DetailTransaksiScreen(
-      {super.key,
-      required this.idTransaction,
-      required this.status,
-      this.refreshToken,
-      this.refreshCallback,
-      required this.navigatorKey});
+  const DetailTransaksiScreen({
+    super.key,
+    required this.idTransaction,
+    required this.status,
+    this.refreshToken,
+    this.refreshCallback,
+    required this.navigatorKey,
+    required this.role,
+  });
 
   final GlobalKey<NavigatorState> navigatorKey;
-  final String idTransaction, status;
+  final String idTransaction, status, role;
   final VoidCallback? refreshToken, refreshCallback;
 
   @override
@@ -329,9 +331,11 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                     : Text(
                                         snapshot.data!.data!.type == 0
                                             ? "Pembayaran ${snapshot.data!.data!.status}"
-                                            : snapshot.data!.data!.type == 2
-                                                ? "Penarikan Dana"
-                                                : "",
+                                            : snapshot.data!.data!.type == 1
+                                                ? "Pembayaran ${snapshot.data!.data!.status}"
+                                                : snapshot.data!.data!.type == 2
+                                                    ? "Penarikan Dana"
+                                                    : "",
                                         style: GoogleFonts.poppins(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600))
@@ -389,7 +393,9 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                         snapshot.data!.data!.type == 0
                                             ? "Pembayaran ${snapshot.data!.data!.status}"
                                             : snapshot.data!.data!.type == 1
-                                                ? "Transaksi NFC"
+                                                ? widget.role == "3"
+                                                    ? "Pembayaran ${snapshot.data!.data!.status}"
+                                                    : "Transaksi NFC"
                                                 : snapshot.data!.data!.type == 2
                                                     ? "Penarikan Dana"
                                                     : "",
