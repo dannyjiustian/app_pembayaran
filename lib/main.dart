@@ -20,7 +20,7 @@ void main() async {
     SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
   );
   await initOnBoarding();
-  runApp(const OnBoardingView());
+  runApp(OnBoardingView());
 }
 
 Future<void> initOnBoarding() async {
@@ -38,24 +38,30 @@ Future<void> initOnBoarding() async {
 }
 
 class OnBoardingView extends StatelessWidget {
-  const OnBoardingView({Key? key});
+  OnBoardingView({Key? key});
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'App Pembayaran',
+      navigatorKey: navigatorKey,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.poppinsTextTheme(
           Theme.of(context).textTheme,
         ),
+        fontFamily: GoogleFonts.poppins().fontFamily,
       ),
       home: onBoarding == 0
           ? OnBoardingPage(
               valueHome: onHomeScreen,
+              navigatorKey: navigatorKey,
             )
           : onHomeScreen == 0
-              ? const LoginScreen()
+              ? LoginScreen(
+                  navigatorKey: navigatorKey,
+                )
               : _buildSwitch(context),
     );
   }
@@ -63,13 +69,19 @@ class OnBoardingView extends StatelessWidget {
   Widget _buildSwitch(BuildContext context) {
     switch (data?.role) {
       case '1':
-        return const HomeScreen();
+        return HomeScreen(
+          navigatorKey: navigatorKey,
+        );
       case '2':
-        return const HomeScreenOutlet();
+        return HomeScreenOutlet(
+          navigatorKey: navigatorKey,
+        );
       case '3':
-        return const HomeScreenCounter();
+        return HomeScreenCounter(navigatorKey: navigatorKey,);
       default:
-        return const HomeScreen();
+        return HomeScreen(
+          navigatorKey: navigatorKey,
+        );
     }
   }
 }
