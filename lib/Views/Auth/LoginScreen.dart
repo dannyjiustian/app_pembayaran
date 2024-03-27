@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Connection/Connection.dart';
@@ -187,7 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      HomeScreenCounter()));
+                                                      HomeScreenCounter(
+                                                        navigatorKey:
+                                                            widget.navigatorKey,)));
                                           break;
                                         default:
                                           Navigator.pushReplacement(
