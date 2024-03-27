@@ -37,7 +37,8 @@ class CardListTransactionWidget extends StatelessWidget {
                 idTransaction: idTransaction,
                 status: status,
                 refreshToken: refreshToken,
-                refreshCallback: refreshCallback)));
+                refreshCallback: refreshCallback,
+                role: role)));
       },
       child: Container(
         width: mediaQueryWidth,
