@@ -11,9 +11,10 @@ import '../Auth/LoginScreen.dart';
 import '../Home/HomeScreen.dart';
 
 class OnBoardingPage extends StatefulWidget {
-  const OnBoardingPage({super.key, required this.valueHome, required this.navigatorKey});
+  const OnBoardingPage(
+      {super.key, required this.valueHome, required this.navigatorKey});
   final int valueHome;
- final GlobalKey<NavigatorState> navigatorKey;
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   State<OnBoardingPage> createState() => _OnBoardingPageState();
@@ -23,7 +24,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   @override
   Widget build(BuildContext context) {
-    const pageDecoration = const PageDecoration(
+    const pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
       bodyTextStyle: TextStyle(fontSize: 17),
       bodyPadding: EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -63,41 +64,34 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
         ),
       ],
       onDone: () async {
+        final pref = await SharedPreferences.getInstance();
+        pref.setInt('OnBoarding', 1);
+        var permissionStatus;
         if (Platform.isAndroid) {
           AndroidDeviceInfo build = await deviceInfoPlugin.androidInfo;
           PermissionWithService locationPermission =
               Permission.locationWhenInUse;
 
-          final pref = await SharedPreferences.getInstance();
-          pref.setInt('OnBoarding', 1);
-          var permissionStatus = await locationPermission.status;
+          permissionStatus = await locationPermission.status;
           if (build.version.sdkInt >= 28) {
-            if (permissionStatus == PermissionStatus.denied) {
+            if (permissionStatus == PermissionStatus.denied ||
+                permissionStatus == PermissionStatus.permanentlyDenied) {
               permissionStatus = await locationPermission.request();
-
-              if (permissionStatus == PermissionStatus.denied) {
-                permissionStatus = await locationPermission.request();
-              }
-            }
-          } else {
-            if (permissionStatus == PermissionStatus.denied) {
-              permissionStatus = await locationPermission.request();
-
-              if (permissionStatus == PermissionStatus.denied) {
-                permissionStatus = await locationPermission.request();
-              }
             }
           }
-          if (permissionStatus == PermissionStatus.granted) {
-            bool isLocationServiceOn =
-                await locationPermission.serviceStatus.isEnabled;
-            if (isLocationServiceOn) {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (builder) {
-                return widget.valueHome == 0 ? LoginScreen(navigatorKey: widget.navigatorKey,) : HomeScreen(navigatorKey: widget.navigatorKey,);
-              }));
-            }
-          }
+        }
+        if (permissionStatus == PermissionStatus.granted ||
+            permissionStatus == PermissionStatus.permanentlyDenied) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (builder) {
+            return widget.valueHome == 0
+                ? LoginScreen(
+                    navigatorKey: widget.navigatorKey,
+                  )
+                : HomeScreen(
+                    navigatorKey: widget.navigatorKey,
+                  );
+          }));
         }
       },
       dotsFlex: 4,
@@ -105,8 +99,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       showBackButton: false,
       showDoneButton: true,
       showNextButton: true,
-      back: Icon(Icons.arrow_back),
-      next: Icon(Icons.arrow_forward),
+      back: const Icon(Icons.arrow_back),
+      next: const Icon(Icons.arrow_forward),
       skip: Text(
         'Skip',
         style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500),
@@ -115,7 +109,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
         'Done',
         style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500),
       ),
-      dotsDecorator: DotsDecorator(
+      dotsDecorator: const DotsDecorator(
           size: Size(10, 10),
           color: Colors.grey,
           activeSize: Size(22, 10),
