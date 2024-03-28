@@ -4,14 +4,19 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../Connection/Connection.dart';
+import '../../Function/cutString.dart';
+import '../../Function/formatDateFullLimit.dart';
 import '../../Function/formatDateOnly.dart';
+import '../../Function/formatToRupiah.dart';
 import '../../Models/JWT/JWTDecode.dart';
 import '../../Models/ListTransaction/ListTransaction.dart';
 import '../../Models/OutletData/OutletData.dart';
@@ -22,6 +27,7 @@ import '../Reader/ListReaderScreen.dart';
 import '../Widget/ButtonWidget.dart';
 import '../Widget/CardBannerWidget.dart';
 import '../Widget/CardListTransactionWidget.dart';
+import '../Widget/LoadingCardRFIDVirtualWidget.dart';
 import '../Widget/LoadingListTransactionWidget.dart';
 
 class HomeScreenCounter extends StatefulWidget {
@@ -41,11 +47,22 @@ class _HomeScreenCounterState extends State<HomeScreenCounter>
   Connection conn = Connection();
   int _selectedIndexBottomNav = 0, _selectedIndexTab = 0;
   PageController _pageController = PageController(initialPage: 0);
+  Future<OutletData>? _futureDataOutlet;
   Future<ListTransaction>? _futureDataLastTransaction,
       _futureDataTransactionFinish,
       _futureDataTransactionOnProcess;
   late TabController _tabController;
   String? idOutlet;
+
+  Future<void> _launchInBrowser(String urlString) async {
+    Uri url = Uri.parse(urlString);
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   Future checkLocalStorage() async {
     final pref = await SharedPreferences.getInstance();
@@ -120,7 +137,7 @@ class _HomeScreenCounterState extends State<HomeScreenCounter>
   Future<void> refreshData() async {
     setState(() {
       if (_selectedIndexBottomNav == 0) {
-        fetchDataOutlet();
+        _futureDataOutlet = fetchDataOutlet();
         _futureDataLastTransaction = fetchDataLastTransaction();
       } else if (_selectedIndexBottomNav == 1 && _selectedIndexTab == 0) {
         _futureDataTransactionFinish = fetchDataTransactionFinish();
@@ -148,9 +165,11 @@ class _HomeScreenCounterState extends State<HomeScreenCounter>
         jwtData =
             JWTDecode.fromJson(JWT.decode(accessToken.toString()).payload);
       });
-      fetchDataOutlet();
+      _futureDataOutlet = fetchDataOutlet();
       _futureDataLastTransaction = fetchDataLastTransaction();
     });
+    _futureDataOutlet =
+        Future.value(OutletData(status: false, message: "Waiting data!"));
     _futureDataLastTransaction =
         Future.value(ListTransaction(status: false, message: "Waiting data!"));
     _tabController = TabController(length: 2, vsync: this);
@@ -245,6 +264,378 @@ class _HomeScreenCounterState extends State<HomeScreenCounter>
                             ),
                           ),
                         ),
+                        FutureBuilder(
+                            future: _futureDataOutlet,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return LoadingCardRFIDVirtualWidget(
+                                  mediaQueryWidth: mediaQueryWidth,
+                                );
+                              } else {
+                                if (snapshot.data!.status) {
+                                  return Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        20, 0, 20, 10),
+                                    child: SizedBox(
+                                      height: 200,
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 0, 10),
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 2.5),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                              color: Colors.blue.shade100),
+                                          width: mediaQueryWidth,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      "Total Pendapatan",
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color:
+                                                                  Colors.black),
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "Ketuk Untuk Info",
+                                                          style: GoogleFonts
+                                                              .poppins(
+                                                                  fontSize: 10,
+                                                                  color: Colors
+                                                                      .black),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 5),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            QuickAlert.show(
+                                                              context: context,
+                                                              type:
+                                                                  QuickAlertType
+                                                                      .custom,
+                                                              barrierDismissible:
+                                                                  true,
+                                                              confirmBtnText:
+                                                                  'Tutup',
+                                                              showConfirmBtn:
+                                                                  false,
+                                                              customAsset:
+                                                                  'assets/img/gif/info.gif',
+                                                              widget: Column(
+                                                                children: [
+                                                                  Text(
+                                                                    "Detail Etherium Wallet",
+                                                                    style: GoogleFonts.poppins(
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .black),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 10,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                          "Wallet Address",
+                                                                          style:
+                                                                              GoogleFonts.poppins(
+                                                                            fontSize:
+                                                                                14,
+                                                                          )),
+                                                                      Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.end,
+                                                                        children: [
+                                                                          Text(
+                                                                              cutString(snapshot.data!.data!.wallet_address, change: "..."),
+                                                                              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
+                                                                          const SizedBox(
+                                                                            width:
+                                                                                2,
+                                                                          ),
+                                                                          InkWell(
+                                                                            onTap:
+                                                                                () {
+                                                                              Clipboard.setData(ClipboardData(text: snapshot.data!.data!.wallet_address)).then((_) {
+                                                                                Fluttertoast.showToast(
+                                                                                  msg: 'Wallet Address Tersalin',
+                                                                                  toastLength: Toast.LENGTH_SHORT,
+                                                                                  gravity: ToastGravity.BOTTOM,
+                                                                                  timeInSecForIosWeb: 1,
+                                                                                  backgroundColor: Colors.black,
+                                                                                  textColor: Colors.white,
+                                                                                  fontSize: 16.0,
+                                                                                );
+                                                                              });
+                                                                            },
+                                                                            child:
+                                                                                const Icon(Iconsax.document_copy, size: 20),
+                                                                          )
+                                                                        ],
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                          "Saldo ETH",
+                                                                          style:
+                                                                              GoogleFonts.poppins(
+                                                                            fontSize:
+                                                                                14,
+                                                                          )),
+                                                                      Text(
+                                                                          "${snapshot.data!.data!.balance_eth} ETH",
+                                                                          style: GoogleFonts.poppins(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w600)),
+                                                                    ],
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 20,
+                                                                  ),
+                                                                  Text(
+                                                                    "Tambah Saldo Etherium",
+                                                                    style: GoogleFonts.poppins(
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .black),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 10,
+                                                                  ),
+                                                                  ButtonWidget(
+                                                                      buttonText:
+                                                                          "Alchamy Faucet",
+                                                                      colorSetBody:
+                                                                          Colors
+                                                                              .blue,
+                                                                      colorSetText:
+                                                                          Colors
+                                                                              .white,
+                                                                      functionTap:
+                                                                          () {
+                                                                        _launchInBrowser(
+                                                                            "https://www.alchemy.com/faucets/ethereum-sepolia");
+                                                                      }),
+                                                                  const SizedBox(
+                                                                    height: 10,
+                                                                  ),
+                                                                  ButtonWidget(
+                                                                      buttonText:
+                                                                          "PoW Faucet",
+                                                                      colorSetBody:
+                                                                          Colors
+                                                                              .blue,
+                                                                      colorSetText:
+                                                                          Colors
+                                                                              .white,
+                                                                      functionTap:
+                                                                          () {
+                                                                        _launchInBrowser(
+                                                                            "https://sepolia-faucet.pk910.de/");
+                                                                      })
+                                                                ],
+                                                              ),
+                                                              onConfirmBtnTap:
+                                                                  () async {
+                                                                Navigator.of(
+                                                                        context,
+                                                                        rootNavigator:
+                                                                            true)
+                                                                    .pop();
+                                                              },
+                                                            );
+                                                          },
+                                                          child: const Icon(
+                                                            Iconsax.info_circle,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            "Saldo",
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    fontSize:
+                                                                        10,
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
+                                                          Text(
+                                                            formatToRupiah(
+                                                                snapshot
+                                                                    .data!
+                                                                    .data!
+                                                                    .balance),
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
+                                                          Text(
+                                                            "Saldo ETH",
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    fontSize:
+                                                                        10,
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
+                                                          Text(
+                                                            '${snapshot.data!.data!.balance_eth} ETH',
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
+                                                        ]),
+                                                    Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          Text(
+                                                            "Terakhir Perbaharui",
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    fontSize:
+                                                                        10,
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
+                                                          Text(
+                                                            formatDateFullLimit(
+                                                                snapshot
+                                                                    .data!
+                                                                    .data!
+                                                                    .updated_at),
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
+                                                        ]),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        20, 0, 20, 10),
+                                    child: SizedBox(
+                                      height: 180,
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 0, 10),
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 2.5),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                              color: Colors.blue.shade100),
+                                          width: mediaQueryWidth,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "Tidak Ada Data Outlet!",
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.black),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            }),
                         InkWell(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
