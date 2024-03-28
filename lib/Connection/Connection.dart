@@ -338,9 +338,11 @@ class Connection {
     }
   }
 
-  Future createTransaction(String token, Object body) async {
+  Future createTransaction(String token, Object body, {bool? withdraw}) async {
     try {
-      Uri uri = Uri.parse("${url}transaction/save");
+      String urlQuery = "${url}transaction/save";
+      if (withdraw != null) urlQuery += "?withdraw=$withdraw";
+      Uri uri = Uri.parse(urlQuery);
       final response = await http.post(
         uri,
         body: body,
@@ -457,39 +459,6 @@ class Connection {
           (json.decode('{"status": false, "message": "${e.toString()}"}')
               as Map<String, dynamic>);
       return OutletData.fromJson(data);
-    }
-  }
-
-  Future updateOutlet(String token, String id_outlet, String balance) async {
-    try {
-      Uri uri = Uri.parse("${url}outlet/$id_outlet/update");
-      final response = await http.put(
-        uri,
-        body: {
-          "balance": balance,
-        },
-        headers: _setHeaders(token),
-      );
-      Map<String, dynamic> data =
-          (json.decode(response.body) as Map<String, dynamic>);
-      if (response.statusCode == 200) {
-        return UpdateCard.fromJson(data);
-      } else if (response.statusCode == 401) {
-        String? newToken = await refreshTokenAction();
-        if (newToken != null) {
-          return updateOutlet(newToken, id_outlet, balance);
-        } else {
-          return UpdateCard(
-              status: false, message: "refresh token verification failed");
-        }
-      } else {
-        return UpdateCard.fromJson(data);
-      }
-    } catch (e) {
-      Map<String, dynamic> data =
-          (json.decode('{"status": false, "message": "${e.toString()}"}')
-              as Map<String, dynamic>);
-      return UpdateCard.fromJson(data);
     }
   }
 
