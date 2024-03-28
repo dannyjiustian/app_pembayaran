@@ -11,6 +11,7 @@ DataListCard _$DataListCardFromJson(Map<String, dynamic> json) => DataListCard(
       id_user: json['id_user'] as String,
       id_rfid: json['id_rfid'] as String,
       wallet_address: json['wallet_address'] as String,
+      balance_eth: (json['balance_eth'] as num).toDouble(),
       balance: json['balance'] as int,
     );
 
@@ -21,4 +22,5 @@ Map<String, dynamic> _$DataListCardToJson(DataListCard instance) =>
       'id_rfid': instance.id_rfid,
       'wallet_address': instance.wallet_address,
       'balance': instance.balance,
+      'balance_eth': instance.balance_eth,
     };
