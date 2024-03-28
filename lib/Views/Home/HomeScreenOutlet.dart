@@ -3,13 +3,16 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../Connection/Connection.dart';
+import '../../Function/cutString.dart';
 import '../../Function/formatDateFullLimit.dart';
 import '../../Function/formatDateOnly.dart';
 import '../../Function/formatToRupiah.dart';
@@ -50,6 +53,16 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
       _futureDataTransactionOnProcess;
   late TabController _tabController;
   String? idOutlet;
+
+  Future<void> _launchInBrowser(String urlString) async {
+    Uri url = Uri.parse(urlString);
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   Future checkLocalStorage() async {
     final pref = await SharedPreferences.getInstance();
@@ -265,7 +278,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                     padding: const EdgeInsets.fromLTRB(
                                         20, 0, 20, 10),
                                     child: SizedBox(
-                                      height: 180,
+                                      height: 200,
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 0, 0, 10),
@@ -304,6 +317,179 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                                               color:
                                                                   Colors.black),
                                                     ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "Ketuk Untuk Info",
+                                                          style: GoogleFonts
+                                                              .poppins(
+                                                                  fontSize: 10,
+                                                                  color: Colors
+                                                                      .black),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 5),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            QuickAlert.show(
+                                                              context: context,
+                                                              type:
+                                                                  QuickAlertType
+                                                                      .custom,
+                                                              barrierDismissible:
+                                                                  true,
+                                                              confirmBtnText:
+                                                                  'Tutup',
+                                                              showConfirmBtn:
+                                                                  false,
+                                                              customAsset:
+                                                                  'assets/img/gif/info.gif',
+                                                              widget: Column(
+                                                                children: [
+                                                                  Text(
+                                                                    "Detail Etherium Wallet",
+                                                                    style: GoogleFonts.poppins(
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .black),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 10,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                          "Wallet Address",
+                                                                          style:
+                                                                              GoogleFonts.poppins(
+                                                                            fontSize:
+                                                                                14,
+                                                                          )),
+                                                                      Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.end,
+                                                                        children: [
+                                                                          Text(
+                                                                              cutString(snapshot.data!.data!.wallet_address, change: "..."),
+                                                                              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
+                                                                          const SizedBox(
+                                                                            width:
+                                                                                2,
+                                                                          ),
+                                                                          InkWell(
+                                                                            onTap:
+                                                                                () {
+                                                                              Clipboard.setData(ClipboardData(text: snapshot.data!.data!.wallet_address)).then((_) {
+                                                                                Fluttertoast.showToast(
+                                                                                  msg: 'Wallet Address Tersalin',
+                                                                                  toastLength: Toast.LENGTH_SHORT,
+                                                                                  gravity: ToastGravity.BOTTOM,
+                                                                                  timeInSecForIosWeb: 1,
+                                                                                  backgroundColor: Colors.black,
+                                                                                  textColor: Colors.white,
+                                                                                  fontSize: 16.0,
+                                                                                );
+                                                                              });
+                                                                            },
+                                                                            child:
+                                                                                const Icon(Iconsax.document_copy, size: 20),
+                                                                          )
+                                                                        ],
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                          "Saldo ETH",
+                                                                          style:
+                                                                              GoogleFonts.poppins(
+                                                                            fontSize:
+                                                                                14,
+                                                                          )),
+                                                                      Text(
+                                                                          "${snapshot.data!.data!.balance_eth} ETH",
+                                                                          style: GoogleFonts.poppins(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w600)),
+                                                                    ],
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 20,
+                                                                  ),
+                                                                  Text(
+                                                                    "Tambah Saldo Etherium",
+                                                                    style: GoogleFonts.poppins(
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .black),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 10,
+                                                                  ),
+                                                                  ButtonWidget(
+                                                                      buttonText:
+                                                                          "Alchamy Faucet",
+                                                                      colorSetBody:
+                                                                          Colors
+                                                                              .blue,
+                                                                      colorSetText:
+                                                                          Colors
+                                                                              .white,
+                                                                      functionTap:
+                                                                          () {
+                                                                        _launchInBrowser(
+                                                                            "https://www.alchemy.com/faucets/ethereum-sepolia");
+                                                                      }),
+                                                                  const SizedBox(
+                                                                    height: 10,
+                                                                  ),
+                                                                  ButtonWidget(
+                                                                      buttonText:
+                                                                          "PoW Faucet",
+                                                                      colorSetBody:
+                                                                          Colors
+                                                                              .blue,
+                                                                      colorSetText:
+                                                                          Colors
+                                                                              .white,
+                                                                      functionTap:
+                                                                          () {
+                                                                        _launchInBrowser(
+                                                                            "https://sepolia-faucet.pk910.de/");
+                                                                      })
+                                                                ],
+                                                              ),
+                                                              onConfirmBtnTap:
+                                                                  () async {
+                                                                Navigator.of(
+                                                                        context,
+                                                                        rootNavigator:
+                                                                            true)
+                                                                    .pop();
+                                                              },
+                                                            );
+                                                          },
+                                                          child: const Icon(
+                                                            Iconsax.info_circle,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
                                                     Column(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
@@ -341,6 +527,8 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
                                                           .spaceBetween,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
                                                   children: [
                                                     Column(
                                                         mainAxisAlignment:
@@ -375,6 +563,27 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                                                     color: Colors
                                                                         .black),
                                                           ),
+                                                          Text(
+                                                            "Saldo ETH",
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    fontSize:
+                                                                        10,
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
+                                                          Text(
+                                                            '${snapshot.data!.data!.balance_eth} ETH',
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
                                                         ]),
                                                     SizedBox(
                                                       width: 130,
@@ -390,6 +599,8 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                                                         context)
                                                                     .push(MaterialPageRoute(
                                                                         builder: (context) => WithdrawScreen(
+                                                                              walletAddress: snapshot.data!.data!.wallet_address,
+                                                                              balanceEth: snapshot.data!.data!.balance_eth,
                                                                               refreshToken: refreshToken,
                                                                               typeDetect: 3,
                                                                               idOutlet: snapshot.data!.data!.id_outlet,
