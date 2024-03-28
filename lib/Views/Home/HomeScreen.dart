@@ -264,6 +264,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                 .data!.data![index].balance,
                                             walletAddress: snapshot.data!
                                                 .data![index].wallet_address,
+                                            balanceEth: snapshot
+                                                .data!.data![index].balance_eth,
                                             mediaQueryWidth: mediaQueryWidth,
                                           );
                                         },
@@ -762,8 +764,8 @@ class _HomeScreenState extends State<HomeScreen>
                                               }
                                             }
                                             Navigator.of(context,
-                                                            rootNavigator: true)
-                                                        .pop();
+                                                    rootNavigator: true)
+                                                .pop();
                                             Navigator.pushReplacement(
                                                 context,
                                                 MaterialPageRoute(
