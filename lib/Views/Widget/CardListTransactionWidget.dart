@@ -102,7 +102,8 @@ class CardListTransactionWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              formatToRupiah(totalPayment, type: type),
+                              formatToRupiah(totalPayment,
+                                  type: type, role: role),
                               style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
