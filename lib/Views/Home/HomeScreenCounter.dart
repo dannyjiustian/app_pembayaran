@@ -415,7 +415,7 @@ class _HomeScreenCounterState extends State<HomeScreenCounter>
                                                                                 14,
                                                                           )),
                                                                       Text(
-                                                                          "${snapshot.data!.data!.balance_eth} ETH",
+                                                                          "${cutString(snapshot.data!.data!.balance_eth.toString(), cut: 7, change: "")} ETH",
                                                                           style: GoogleFonts.poppins(
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w600)),
@@ -536,7 +536,7 @@ class _HomeScreenCounterState extends State<HomeScreenCounter>
                                                                         .black),
                                                           ),
                                                           Text(
-                                                            '${snapshot.data!.data!.balance_eth} ETH',
+                                                            '${cutString(snapshot.data!.data!.balance_eth.toString(), cut: 7, change: "")} ETH',
                                                             style: GoogleFonts
                                                                 .poppins(
                                                                     fontSize:
