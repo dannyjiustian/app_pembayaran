@@ -323,7 +323,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                                       fontSize: 10, color: Colors.black),
                                 ),
                                 Text(
-                                  '${widget.balanceEth} ETH',
+                                  '${cutString(widget.balanceEth.toString(), cut: 7, change: "")} ETH',
                                   style: GoogleFonts.poppins(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -424,6 +424,15 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                                               typeDetect: widget.typeDetect,
                                             )),
                                   );
+                                } else {
+                                  QuickAlert.show(
+                                    context: context,
+                                    type: QuickAlertType.error,
+                                    title: 'Oops...',
+                                    text:
+                                        'Terjadi Kesalahan Silakan Coba Lagi!',
+                                  );
+                                  return;
                                 }
                               } else {
                                 QuickAlert.show(
