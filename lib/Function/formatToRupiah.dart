@@ -1,4 +1,4 @@
-String formatToRupiah(int balance, {int? type}) {
+String formatToRupiah(int balance, {int? type, String? role}) {
   String formattedBalance = balance.toString();
   List<String> parts = [];
 
@@ -10,7 +10,9 @@ String formatToRupiah(int balance, {int? type}) {
   parts.add(formattedBalance);
 
   String text = type == 0
-      ? "-Rp. "
+      ? role == "2"
+          ? "+Rp. "
+          : "-Rp. "
       : type == 1
           ? "+Rp. "
           : type == 2
