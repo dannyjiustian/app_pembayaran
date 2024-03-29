@@ -415,7 +415,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                                                                 14,
                                                                           )),
                                                                       Text(
-                                                                          "${snapshot.data!.data!.balance_eth} ETH",
+                                                                          "${cutString(snapshot.data!.data!.balance_eth.toString(), cut: 7, change: "")} ETH",
                                                                           style: GoogleFonts.poppins(
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w600)),
@@ -573,7 +573,7 @@ class _HomeScreenOutletState extends State<HomeScreenOutlet>
                                                                         .black),
                                                           ),
                                                           Text(
-                                                            '${snapshot.data!.data!.balance_eth} ETH',
+                                                            '${cutString(snapshot.data!.data!.balance_eth.toString(), cut: 7, change: "")} ETH',
                                                             style: GoogleFonts
                                                                 .poppins(
                                                                     fontSize:
