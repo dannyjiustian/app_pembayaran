@@ -145,7 +145,8 @@ class CardRFIDVirtualWidget extends StatelessWidget {
                                             style: GoogleFonts.poppins(
                                               fontSize: 14,
                                             )),
-                                        Text("${balanceEth!} ETH",
+                                        Text(
+                                            "${cutString(balanceEth!.toString(), cut: 7, change: "")} ETH",
                                             style: GoogleFonts.poppins(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w600)),
@@ -241,7 +242,7 @@ class CardRFIDVirtualWidget extends StatelessWidget {
                                       fontSize: 10, color: Colors.black),
                                 ),
                                 Text(
-                                  '${balanceEth!} ETH',
+                                  '${cutString(balanceEth!.toString(), cut: 7, change: "")} ETH',
                                   style: GoogleFonts.poppins(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
