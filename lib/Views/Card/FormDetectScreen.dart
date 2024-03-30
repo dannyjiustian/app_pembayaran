@@ -181,6 +181,14 @@ class _FormDetectScreenState extends State<FormDetectScreen> {
                                               ?.unfocus();
                                           if (_formKey.currentState!
                                               .validate()) {
+                                            bool isNfcAvailable =
+                                                await NfcManager.instance
+                                                    .isAvailable();
+                                            if (isNfcAvailable) {
+                                              await NfcManager.instance
+                                                  .stopSession();
+                                            }
+
                                             setState(() {
                                               _loading = true;
                                             });
@@ -192,28 +200,15 @@ class _FormDetectScreenState extends State<FormDetectScreen> {
                                                     total_payment: amount.text
                                                         .replaceAll(".", ""),
                                                     status: "Selesai");
-                                            var res1 =
+                                            var res =
                                                 await conn.createTransaction(
-                                                    accessToken!,
-                                                    data.toJson());
-
-                                            var res2 = await conn.updateCard(
-                                                accessToken!,
-                                                widget.id_card,
-                                                amount.text
-                                                    .replaceAll(".", ""));
+                                                    accessToken!, data.toJson(),
+                                                    topup: true);
 
                                             setState(() {
                                               _loading = false;
                                             });
-                                            if (res1.status && res2.status) {
-                                              bool isNfcAvailable =
-                                                  await NfcManager.instance
-                                                      .isAvailable();
-                                              if (isNfcAvailable) {
-                                                await NfcManager.instance
-                                                    .stopSession();
-                                              }
+                                            if (res.status) {
                                               Navigator.of(context)
                                                   .pushReplacement(
                                                 MaterialPageRoute(
