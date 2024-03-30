@@ -14,6 +14,7 @@ import '../Models/OutletData/OutletData.dart';
 import '../Models/TokenJWT/TokenJWT.dart';
 import '../Models/UpdateCard/UpdateCard.dart';
 import '../Models/UpdateReader/UpdateReader.dart';
+import '../Models/ValidateTxEth/ValidateTxEth.dart';
 
 class Connection {
   final String url = "http://192.168.100.75:3000/api/v1/";
@@ -338,10 +339,12 @@ class Connection {
     }
   }
 
-  Future createTransaction(String token, Object body, {bool? withdraw}) async {
+  Future createTransaction(String token, Object body,
+      {bool? withdraw, bool? topup}) async {
     try {
       String urlQuery = "${url}transaction/save";
       if (withdraw != null) urlQuery += "?withdraw=$withdraw";
+      if (topup != null) urlQuery += "?topup=$topup";
       Uri uri = Uri.parse(urlQuery);
       final response = await http.post(
         uri,
@@ -526,7 +529,7 @@ class Connection {
   Future deleteHardware(String token, String id_hardware) async {
     try {
       Uri uri = Uri.parse("${url}hardware/${id_hardware}");
-      final response = await http.post(
+      final response = await http.delete(
         uri,
         headers: _setHeaders(token),
       );
@@ -581,6 +584,36 @@ class Connection {
           (json.decode('{"status": false, "message": "${e.toString()}"}')
               as Map<String, dynamic>);
       return DataReader.fromJson(data);
+    }
+  }
+
+  Future validateTxHash(String token, String txn_hash) async {
+    try {
+      Uri uri = Uri.parse("${url}transaction/validation/$txn_hash");
+      final response = await http.get(
+        uri,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return ValidateTxEth.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return createHardware(newToken, txn_hash);
+        } else {
+          return ValidateTxEth(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return ValidateTxEth.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return ValidateTxEth.fromJson(data);
     }
   }
 }
