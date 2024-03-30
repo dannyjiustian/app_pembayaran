@@ -9,6 +9,7 @@ import 'package:lottie/lottie.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../Connection/Connection.dart';
 import '../../Function/cutString.dart';
@@ -46,6 +47,16 @@ String? accessToken;
 class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
   Connection conn = Connection();
   Future<DetailTransaction>? _futureDataDetailTransaction;
+
+  Future<void> _launchInBrowser(String urlString) async {
+    Uri url = Uri.parse(urlString);
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   Future checkLocalStorage() async {
     final pref = await SharedPreferences.getInstance();
@@ -172,7 +183,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                             Text(
                                 formatToRupiah(
                                     snapshot.data!.data!.total_payment,
-                                    type: snapshot.data!.data!.type),
+                                    type: snapshot.data!.data!.type,
+                                    role: widget.role),
                                 style: GoogleFonts.poppins(
                                     fontSize: 24, fontWeight: FontWeight.w600)),
                             Text(
@@ -384,7 +396,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                 );
                                               });
                                             },
-                                            child: Icon(Iconsax.document_copy,
+                                            child: const Icon(
+                                                Iconsax.document_copy,
                                                 size: 20),
                                           )
                                         ],
@@ -447,7 +460,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                 );
                                               });
                                             },
-                                            child: Icon(Iconsax.document_copy,
+                                            child: const Icon(
+                                                Iconsax.document_copy,
                                                 size: 20),
                                           )
                                         ],
@@ -506,7 +520,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                                 );
                                               });
                                             },
-                                            child: Icon(Iconsax.document_copy,
+                                            child: const Icon(
+                                                Iconsax.document_copy,
                                                 size: 20),
                                           )
                                         ],
@@ -515,7 +530,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                         snapshot.data!.data!.status ==
                                                 "On Proses"
                                             ? "Menunggu Selesai"
-                                            : "Transaksi Batal",
+                                            : "Pembayaran Batal",
                                         style: GoogleFonts.poppins(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600))
@@ -560,7 +575,8 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                 Text(
                                     formatToRupiah(
                                         snapshot.data!.data!.total_payment,
-                                        type: snapshot.data!.data!.type),
+                                        type: snapshot.data!.data!.type,
+                                        role: widget.role),
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600)),
@@ -583,10 +599,55 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         ButtonWidget(
+                                          buttonText:
+                                              "Check Validasi Transaksi",
+                                          colorSetBody: Colors.blue,
+                                          colorSetText: Colors.white,
+                                          functionTap: () async {
+                                            QuickAlert.show(
+                                              context: contextFuture,
+                                              type: QuickAlertType.loading,
+                                              title: 'Loading',
+                                              text:
+                                                  'Proses Validasi Transaksi, Mohon Tunggu!',
+                                              barrierDismissible: false,
+                                            );
+                                            var res = await conn.validateTxHash(
+                                                accessToken!,
+                                                snapshot.data!.data!.txn_hash!);
+                                            Navigator.of(contextFuture,
+                                                    rootNavigator: true)
+                                                .pop();
+                                            if (res!.status) {
+                                              QuickAlert.show(
+                                                context: contextFuture,
+                                                type: QuickAlertType.success,
+                                                title: "Berhasil",
+                                                text:
+                                                    "Transaksi Sama Dengan Blockchain!",
+                                              );
+                                            } else {
+                                              QuickAlert.show(
+                                                context: contextFuture,
+                                                type: QuickAlertType.error,
+                                                title: 'Oops...',
+                                                text:
+                                                    'Transaksi Tidak Sama Dengan Blockchain!, Coba Lagi!',
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        ButtonWidget(
                                           buttonText: "Etherscan Blockchain",
                                           colorSetBody: Colors.blue,
                                           colorSetText: Colors.white,
-                                          functionTap: () async {},
+                                          functionTap: () {
+                                            _launchInBrowser(
+                                                "https://sepolia.etherscan.io/tx/${snapshot.data!.data!.txn_hash}");
+                                          },
                                         ),
                                       ],
                                     ),
