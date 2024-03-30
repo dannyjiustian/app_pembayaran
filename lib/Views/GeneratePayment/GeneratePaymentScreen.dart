@@ -220,7 +220,13 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                                         : dataMqttRes.message ==
                                                 "Card Not Found"
                                             ? 'Kartu Tidak Terdaftar!'
-                                            : 'Saldo Kartu Kurang!',
+                                            : dataMqttRes.message ==
+                                                    "Balance ETH Not Enough"
+                                                ? "Saldo ETH Tidak Ada!"
+                                                : dataMqttRes.message ==
+                                                        "Balance Card Not Enough"
+                                                    ? 'Saldo Kartu Kurang!'
+                                                    : "Transaksi Blockchain Bermasalah!",
                                     toastLength: Toast.LENGTH_SHORT,
                                     gravity: ToastGravity.BOTTOM,
                                     timeInSecForIosWeb: 1,
