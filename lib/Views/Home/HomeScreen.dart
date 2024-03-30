@@ -18,6 +18,7 @@ import '../../Models/ListCard/ListCard.dart';
 import '../../Models/ListTransaction/ListTransaction.dart';
 import '../Auth/LoginScreen.dart';
 import '../Card/DetectCardScreen.dart';
+import '../CardList/CardListScreen.dart';
 import '../Profile/ProfileScreen.dart';
 import '../Widget/ButtonWidget.dart';
 import '../Widget/CardBannerWidget.dart';
@@ -386,6 +387,22 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                               ],
                             ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 15, 20, 0),
+                            child: ButtonWidget(
+                                buttonText: "List Kartu",
+                                colorSetBody: Colors.blue.shade100,
+                                colorSetText: Colors.black,
+                                functionTap: () => {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CardListScreen()))
+                                    }),
                           ),
                         ),
                         SizedBox(
