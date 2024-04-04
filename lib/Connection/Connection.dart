@@ -339,6 +339,39 @@ class Connection {
     }
   }
 
+  Future updateCardActive(String token, String id_card, String status) async {
+    try {
+      Uri uri = Uri.parse("${url}card/$id_card/update-active");
+      final response = await http.put(
+        uri,
+        body: {
+          "is_active": status,
+        },
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return UpdateCard.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return updateCardActive(newToken, id_card, status);
+        } else {
+          return UpdateCard(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return UpdateCard.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return UpdateCard.fromJson(data);
+    }
+  }
+
   Future createTransaction(String token, Object body,
       {bool? withdraw, bool? topup}) async {
     try {
@@ -547,6 +580,36 @@ class Connection {
         }
       } else {
         return UpdateReader.fromJson(data);
+      }
+    } catch (e) {
+      Map<String, dynamic> data =
+          (json.decode('{"status": false, "message": "${e.toString()}"}')
+              as Map<String, dynamic>);
+      return UpdateReader.fromJson(data);
+    }
+  }
+
+  Future deleteCard(String token, String id_card) async {
+    try {
+      Uri uri = Uri.parse("${url}card/${id_card}");
+      final response = await http.delete(
+        uri,
+        headers: _setHeaders(token),
+      );
+      Map<String, dynamic> data =
+          (json.decode(response.body) as Map<String, dynamic>);
+      if (response.statusCode == 200) {
+        return UpdateCard.fromJson(data);
+      } else if (response.statusCode == 401) {
+        String? newToken = await refreshTokenAction();
+        if (newToken != null) {
+          return deleteHardware(newToken, id_card);
+        } else {
+          return UpdateCard(
+              status: false, message: "refresh token verification failed");
+        }
+      } else {
+        return UpdateCard.fromJson(data);
       }
     } catch (e) {
       Map<String, dynamic> data =
