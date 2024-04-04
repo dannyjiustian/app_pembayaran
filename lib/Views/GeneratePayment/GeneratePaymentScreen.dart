@@ -219,7 +219,7 @@ class _GeneratePaymentScreenState extends State<GeneratePaymentScreen> {
                                         ? 'Status Reader Sedang Mati / Tidak Terdaftar!'
                                         : dataMqttRes.message ==
                                                 "Card Not Found"
-                                            ? 'Kartu Tidak Terdaftar!'
+                                            ? 'Kartu Sedang Mati / Tidak Terdaftar!'
                                             : dataMqttRes.message ==
                                                     "Balance ETH Not Enough"
                                                 ? "Saldo ETH Tidak Ada!"
