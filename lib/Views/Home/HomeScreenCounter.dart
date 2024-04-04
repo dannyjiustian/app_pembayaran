@@ -54,6 +54,13 @@ class _HomeScreenCounterState extends State<HomeScreenCounter>
   late TabController _tabController;
   String? idOutlet;
 
+  List<String> imagePathList = [
+    "assets/img/png/banner1.png",
+    "assets/img/png/banner2.png",
+    "assets/img/png/banner3.png",
+    "assets/img/png/banner4.png",
+  ];
+
   Future<void> _launchInBrowser(String urlString) async {
     Uri url = Uri.parse(urlString);
     if (!await launchUrl(
@@ -716,7 +723,9 @@ class _HomeScreenCounterState extends State<HomeScreenCounter>
                             padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
                             child: Swiper(
                               itemBuilder: (BuildContext context, int index) {
-                                return const CardBannerWidget();
+                                return CardBannerWidget(
+                                  imageFile: imagePathList[index],
+                                );
                               },
                               itemCount: 3,
                               viewportFraction: 0.9,
