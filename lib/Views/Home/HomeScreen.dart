@@ -50,6 +50,13 @@ class _HomeScreenState extends State<HomeScreen>
       _futureDataTransactionOnProcess;
   late TabController _tabController;
 
+  List<String> imagePathList = [
+    "assets/img/png/banner1.png",
+    "assets/img/png/banner2.png",
+    "assets/img/png/banner3.png",
+    "assets/img/png/banner4.png",
+  ];
+
   Future checkLocalStorage() async {
     final pref = await SharedPreferences.getInstance();
     accessToken = pref.getString('accessToken');
@@ -401,7 +408,11 @@ class _HomeScreenState extends State<HomeScreen>
                                       Navigator.of(context).push(
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  CardListScreen()))
+                                                  CardListScreen(
+                                                    refreshToken: refreshToken,
+                                                    navigatorKey:
+                                                        widget.navigatorKey,
+                                                  )))
                                     }),
                           ),
                         ),
@@ -411,9 +422,11 @@ class _HomeScreenState extends State<HomeScreen>
                             padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
                             child: Swiper(
                               itemBuilder: (BuildContext context, int index) {
-                                return const CardBannerWidget();
+                                return CardBannerWidget(
+                                  imageFile: imagePathList[index],
+                                );
                               },
-                              itemCount: 3,
+                              itemCount: imagePathList.length,
                               viewportFraction: 0.9,
                               scale: 0.98,
                               autoplay: true,
