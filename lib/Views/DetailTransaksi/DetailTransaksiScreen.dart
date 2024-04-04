@@ -144,7 +144,7 @@ class _DetailTransaksiScreenState extends State<DetailTransaksiScreen> {
                 IconAppbarCustomWidget(
                   iconType: Iconsax.arrow_left_2,
                   functionTap: () async {
-                    widget.refreshToken!();
+                    widget.refreshToken?.call();
                     Navigator.of(context).pop();
                   },
                 ),
