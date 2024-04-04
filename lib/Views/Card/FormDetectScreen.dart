@@ -254,6 +254,11 @@ class _FormDetectScreenState extends State<FormDetectScreen> {
                                 colorSetBody: Colors.blue,
                                 colorSetText: Colors.white,
                                 functionTap: () async {
+                                  bool isNfcAvailable =
+                                      await NfcManager.instance.isAvailable();
+                                  if (isNfcAvailable) {
+                                    await NfcManager.instance.stopSession();
+                                  }
                                   setState(() {
                                     _loading = true;
                                   });
@@ -268,13 +273,7 @@ class _FormDetectScreenState extends State<FormDetectScreen> {
                                   setState(() {
                                     _loading = false;
                                   });
-
                                   if (res.status) {
-                                    bool isNfcAvailable =
-                                        await NfcManager.instance.isAvailable();
-                                    if (isNfcAvailable) {
-                                      await NfcManager.instance.stopSession();
-                                    }
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                           builder: (context) => SuccessScreen(
